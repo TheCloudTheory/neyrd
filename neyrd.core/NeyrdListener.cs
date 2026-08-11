@@ -1,15 +1,10 @@
-using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using neyrd.core;
 
-namespace neyrd.receiver.Networking;
+namespace neyrd.core;
 
-internal sealed class NeyrdListener
+public sealed class NeyrdListener(string ip)
 {
     /// <summary>
     /// Specifies the maximum number of pending connections that can be queued
@@ -23,7 +18,7 @@ internal sealed class NeyrdListener
 
     public async Task BeginListeningAsync(CancellationToken ct = default)
     {
-        var ep = new IPEndPoint(IPAddress.Loopback, NeyrdConfiguration.DefaultListeningPort);
+        var ep = new IPEndPoint(IPAddress.Parse(ip), NeyrdConfiguration.DefaultListeningPort);
         _socket.Bind(ep);
         _socket.Listen(Backlog);
 

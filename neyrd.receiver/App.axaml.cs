@@ -1,8 +1,9 @@
+using System.Net;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using neyrd.receiver.Networking;
+using neyrd.core;
 
 namespace neyrd.receiver;
 
@@ -30,7 +31,7 @@ public partial class App : Application
     
     private void InitializeReceiver()
     {
-        _neyrdListener = new NeyrdListener();
+        _neyrdListener = new NeyrdListener(IPAddress.Loopback.ToString());
         _ = _neyrdListener.BeginListeningAsync(_cts.Token);
     }
 }
