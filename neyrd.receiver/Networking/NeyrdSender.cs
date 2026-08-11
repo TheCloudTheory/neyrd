@@ -7,7 +7,7 @@ using neyrd.core;
 
 namespace neyrd.receiver.Networking;
 
-internal sealed class NeyrdSender
+internal sealed class NeyrdSender(string emitterIpAddress)
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
@@ -16,7 +16,7 @@ internal sealed class NeyrdSender
     {
         try
         {
-            await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), NeyrdConfiguration.DefaultListeningPort);
+            await _socket.ConnectAsync(IPAddress.Parse(emitterIpAddress), NeyrdConfiguration.DefaultListeningPort);
             
             for(var i = 0; i < 10; i++)
             {

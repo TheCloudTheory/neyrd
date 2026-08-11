@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -36,30 +37,35 @@ internal sealed class NeyrdListener
     private async Task HandleEmitted(Socket client, CancellationToken ct)
     {
         var buffer = new ArraySegment<byte>(new byte[4096]);
-        var result = await client.ReceiveAsync(buffer, ct);
-        if (result == 0 || buffer.Array == null)
+        int result;
+        while ((result = await client.ReceiveAsync(buffer, ct)) > 0)
         {
-            return;
-        }
-        
-        var now = DateTimeOffset.Now;
-        var decoded = Encoding.UTF8.GetString(buffer.Array!, 0, result);
-        var messages = decoded.Split("==");
-        foreach (var message in messages)
-        {
-            var segments = message.Split('|');
-            var timestamp = long.Parse(segments[0]);
-            var type = segments[1];
-            var diff = now.Ticks - timestamp;
-
-            if (MessageTypeComparer.IsEqual(type, MessageType.Test))
-            {
-                NeyrdLogger.Log($"Received message with timestamp {timestamp} and diff {diff}");
-            }
+            if (buffer.Array == null) break;
             
-            if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
+            var now = DateTimeOffset.Now;
+            var decoded = Encoding.UTF8.GetString(buffer.Array!, 0, result);
+            var messages = decoded.Split("==").Where(m => !string.IsNullOrWhiteSpace(m)).ToArray();
+        
+            NeyrdLogger.Log($"Received {messages.Length} messages");
+        
+            foreach (var message in messages)
             {
-                NeyrdLogger.Log($"Handshake: {message}");
+                NeyrdLogger.Log($"Processing message: {message}");
+            
+                var segments = message.Split('|');
+                var timestamp = long.Parse(segments[0]);
+                var type = segments[1];
+
+                if (MessageTypeComparer.IsEqual(type, MessageType.Test))
+                {
+                    var diff = now.Ticks - timestamp;
+                    NeyrdLogger.Log($"Received message with timestamp {timestamp} and diff {diff}");
+                }
+            
+                if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
+                {
+                    NeyrdLogger.Log($"Handshake: {message}");
+                }
             }
         }
     }

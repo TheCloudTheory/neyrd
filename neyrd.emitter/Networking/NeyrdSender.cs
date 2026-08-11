@@ -48,13 +48,13 @@ internal sealed class NeyrdSender(string emitterIpAddress)
 
     private async Task SendHandshakeMessageAsync()
     {
-        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateHandshakeMessage(MessageType.Handshake, $"eip:{emitterIpAddress}")]);
+        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateMessageMessage(MessageType.Handshake, $"eip:{emitterIpAddress}")]);
         _ = await _socket.SendAsync(buffer);
     }
 
     private async Task SendTestMessageAsync()
     {
-        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateHandshakeMessage(MessageType.Test, "neyrd test message==")]);
+        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateMessageMessage(MessageType.Test, "neyrd test message==")]);
         _ = await _socket.SendAsync(buffer);
     }
 
