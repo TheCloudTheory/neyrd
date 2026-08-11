@@ -1,20 +1,17 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using neyrd.core;
 
-namespace neyrd.receiver.Networking;
+namespace neyrd.emitter.Networking;
 
-internal sealed class NeyrdListener
+internal sealed class NeyrdListener(string emitterIpAddress)
 {
     /// <summary>
     /// Specifies the maximum number of pending connections that can be queued
     /// on the socket listening for incoming connection requests.
     /// </summary>
-    private const int Backlog = 8;
+    private const int Backlog = 1;
 
     private readonly Socket _socket = new(AddressFamily.InterNetwork,
         SocketType.Stream,
@@ -22,18 +19,18 @@ internal sealed class NeyrdListener
 
     public async Task BeginListeningAsync(CancellationToken ct = default)
     {
-        var ep = new IPEndPoint(IPAddress.Loopback, NeyrdConfiguration.DefaultListeningPort);
+        var ep = new IPEndPoint(IPAddress.Parse(emitterIpAddress), NeyrdConfiguration.DefaultListeningPort);
         _socket.Bind(ep);
         _socket.Listen(Backlog);
 
         while (!ct.IsCancellationRequested)
         {
             var client = await _socket.AcceptAsync(ct);
-            _ = Task.Run(() => HandleEmitted(client, ct), ct);
+            _ = Task.Run(() => HandleReceived(client, ct), ct);
         }
     }
-
-    private async Task HandleEmitted(Socket client, CancellationToken ct)
+    
+    private async Task HandleReceived(Socket client, CancellationToken ct)
     {
         var buffer = new ArraySegment<byte>(new byte[4096]);
         var result = await client.ReceiveAsync(buffer, ct);
@@ -41,25 +38,17 @@ internal sealed class NeyrdListener
         {
             return;
         }
-        
-        var now = DateTimeOffset.Now;
+
         var decoded = Encoding.UTF8.GetString(buffer.Array!, 0, result);
         var messages = decoded.Split("==");
         foreach (var message in messages)
         {
             var segments = message.Split('|');
-            var timestamp = long.Parse(segments[0]);
             var type = segments[1];
-            var diff = now.Ticks - timestamp;
 
-            if (MessageTypeComparer.IsEqual(type, MessageType.Test))
+            if (MessageTypeComparer.IsEqual(type, MessageType.Acknowledgement))
             {
-                NeyrdLogger.Log($"Received message with timestamp {timestamp} and diff {diff}");
-            }
-            
-            if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
-            {
-                NeyrdLogger.Log($"Handshake: {message}");
+                NeyrdLogger.Log($"Acknowledged: {message}");
             }
         }
     }

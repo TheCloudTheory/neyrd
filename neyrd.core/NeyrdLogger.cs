@@ -1,9 +1,6 @@
-using System;
-using System.IO;
+namespace neyrd.core;
 
-namespace neyrd.receiver;
-
-internal static class NeyrdLogger
+public static class NeyrdLogger
 {
     public static void Log(string message)
     {

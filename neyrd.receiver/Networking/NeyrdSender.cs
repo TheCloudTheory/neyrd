@@ -1,11 +1,13 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using neyrd.core;
 
-namespace neyrd.emitter;
+namespace neyrd.receiver.Networking;
 
-internal sealed class ConnectionManager
+internal sealed class NeyrdSender
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
@@ -17,8 +18,11 @@ internal sealed class NetworkInfoCollector
         var nics = NetworkInterface.GetAllNetworkInterfaces();
         var unicastAddresses = nics.Where(x => x.OperationalStatus == OperationalStatus.Up)
             .SelectMany(x => x.GetIPProperties().UnicastAddresses);
-        var ips = unicastAddresses.Select(ua => ua.Address)
-            .Where(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-        return [.. ips.Select(ip => ip.ToString())];
+        var ips = unicastAddresses
+            .Where(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork
+                         && !IPAddress.IsLoopback(ua.Address)
+                         && ua.Address.GetAddressBytes() is [not 169, ..]);
+        
+        return [.. ips.Select(ip => ip.Address.ToString())];
     }
 }
