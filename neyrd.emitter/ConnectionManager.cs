@@ -1,16 +1,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using neyrd.core;
 
 namespace neyrd.emitter;
 
 internal sealed class ConnectionManager
 {
-    /// <summary>
-    /// Defines the default port number on which the server will listen for incoming connections.
-    /// </summary>
-    private const int DefaultReceiverPort = 22222;
-    
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
 
@@ -18,7 +14,7 @@ internal sealed class ConnectionManager
     {
         try
         {
-            await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), DefaultReceiverPort);
+            await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), NeyrdConfiguration.DefaultListeningPort);
             
             for(var i = 0; i < 10; i++)
             {
@@ -27,7 +23,7 @@ internal sealed class ConnectionManager
         }
         catch (InvalidOperationException ex)
         {
-            return new ConnectionTestResult()
+            return new ConnectionTestResult
             {
                 ErrorMessage =
                     "The connection could not be established. Listener is already listening to another emitter.",
@@ -36,14 +32,14 @@ internal sealed class ConnectionManager
         }
         catch (SocketException ex)
         {
-            return new ConnectionTestResult()
+            return new ConnectionTestResult
             {
                 ErrorMessage = "The connection could not be established.",
                 Exception = ex
             };
         }
         
-        return new ConnectionTestResult()
+        return new ConnectionTestResult
         {
             IsSuccessful = true
         };
@@ -51,7 +47,7 @@ internal sealed class ConnectionManager
 
     private async Task SendTestMessageAsync()
     {
-        var buffer = new ArraySegment<byte>([.. Encoding.UTF8.GetBytes($"{DateTimeOffset.Now.Ticks}|0|neyrd test message==")]);
+        var buffer = new ArraySegment<byte>([.. Encoding.UTF8.GetBytes($"{DateTimeOffset.Now.Ticks}|{(int)MessageType.Test}|neyrd test message==")]);
         _ = await _socket.SendAsync(buffer);
     }
 

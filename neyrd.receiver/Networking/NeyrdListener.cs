@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using neyrd.core;
 
 namespace neyrd.receiver.Networking;
 
@@ -15,18 +16,13 @@ internal sealed class NeyrdListener
     /// </summary>
     private const int Backlog = 8;
 
-    /// <summary>
-    /// Defines the default port number on which the server will listen for incoming connections.
-    /// </summary>
-    private const int DefaultListeningPort = 22222;
-
     private readonly Socket _socket = new(AddressFamily.InterNetwork,
         SocketType.Stream,
         ProtocolType.Tcp);
 
     public async Task BeginListeningAsync(CancellationToken ct = default)
     {
-        var ep = new IPEndPoint(IPAddress.Loopback, DefaultListeningPort);
+        var ep = new IPEndPoint(IPAddress.Loopback, NeyrdConfiguration.DefaultListeningPort);
         _socket.Bind(ep);
         _socket.Listen(Backlog);
 
@@ -56,7 +52,7 @@ internal sealed class NeyrdListener
             var type = segments[1];
             var diff = now.Ticks - timestamp;
 
-            if (type == "0")
+            if (MessageTypeComparer.IsEqual(type, MessageType.Test))
             {
                 NeyrdLogger.Log($"Received message with timestamp {timestamp} and diff {diff}");
             }

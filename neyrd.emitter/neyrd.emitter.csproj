@@ -15,4 +15,8 @@
       <PackageReference Include="Spectre.Console" Version="0.57.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\neyrd.core\neyrd.core.csproj" />
+    </ItemGroup>
+
 </Project>

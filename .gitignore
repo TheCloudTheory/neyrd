@@ -3,3 +3,5 @@ neyrd.emitter/obj/**
 neyrd.emitter/bin/**
 neyrd.receiver/bin/**
 neyrd.receiver/obj/**
+neyrd.core/obj/**
+neyrd.core/bin/**

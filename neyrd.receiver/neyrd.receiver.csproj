@@ -16,4 +16,8 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\neyrd.core\neyrd.core.csproj" />
+    </ItemGroup>
 </Project>
