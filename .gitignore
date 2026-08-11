@@ -1,3 +1,5 @@
 neyrd.emitter/obj/**
 .idea/**
 neyrd.emitter/bin/**
+neyrd.receiver/bin/**
+neyrd.receiver/obj/**

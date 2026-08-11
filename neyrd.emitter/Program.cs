@@ -1,4 +1,5 @@
-﻿using neyrd.emitter.Environment;
+﻿using neyrd.emitter;
+using neyrd.emitter.Environment;
 using Spectre.Console;
 
 AnsiConsole.Write(new FigletText("neyrd emitter").Color(Color.DodgerBlue1));
@@ -26,5 +27,19 @@ AnsiConsole.WriteLine();
 
 AnsiConsole.WriteLine("Performing self-check if data can be collected...");
 AnsiConsole.WriteLine("Connecting with receiver...");
+
+var connectionManager = new ConnectionManager();
+var test = await connectionManager.TestConnectionAsync();
+
+if(test.IsSuccessful)
+{
+    AnsiConsole.WriteLine("Connection successful.");
+}
+else
+{
+    AnsiConsole.WriteLine("Connection failed.");
+    AnsiConsole.WriteLine($"Error: {test.ErrorMessage}");
+    AnsiConsole.WriteLine($"Exception: {test.Exception}");
+}
 
 Console.ReadKey();
