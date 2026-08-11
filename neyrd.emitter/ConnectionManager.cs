@@ -20,8 +20,10 @@ internal sealed class ConnectionManager
         {
             await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), DefaultReceiverPort);
             
-            var buffer = new ArraySegment<byte>([.. Encoding.UTF8.GetBytes($"{DateTimeOffset.Now.Ticks}|neyrd test message")]);
-            await _socket.SendAsync(buffer);
+            for(var i = 0; i < 10; i++)
+            {
+                await SendTestMessageAsync();
+            }
         }
         catch (InvalidOperationException ex)
         {
@@ -47,10 +49,16 @@ internal sealed class ConnectionManager
         };
     }
 
+    private async Task SendTestMessageAsync()
+    {
+        var buffer = new ArraySegment<byte>([.. Encoding.UTF8.GetBytes($"{DateTimeOffset.Now.Ticks}|0|neyrd test message==")]);
+        _ = await _socket.SendAsync(buffer);
+    }
+
     internal sealed class ConnectionTestResult
     {
-        public bool IsSuccessful { get; set; }
-        public string? ErrorMessage { get; set; }
-        public Exception? Exception { get; set; }
+        public bool IsSuccessful { get; init; }
+        public string? ErrorMessage { get; init; }
+        public Exception? Exception { get; init; }
     }
 }
