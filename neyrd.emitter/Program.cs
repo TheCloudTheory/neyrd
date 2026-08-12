@@ -1,4 +1,5 @@
-﻿using neyrd.core;
+﻿using System.Net;
+using neyrd.core;
 using neyrd.emitter.Environment;
 using neyrd.emitter.Networking;
 using Spectre.Console;
@@ -36,7 +37,7 @@ _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
 
-var connectionManager = new NeyrdSender(net.NetworkInterfaces.First());
+var connectionManager = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()));
 var test = await connectionManager.TestConnectionAsync();
 
 if(test.IsSuccessful)

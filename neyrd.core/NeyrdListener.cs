@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using neyrd.core.Events;
+using neyrd.core.Messages;
 using neyrd.core.Models.Events;
 
 namespace neyrd.core;

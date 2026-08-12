@@ -1,10 +1,12 @@
 using System.Net;
 using System.Net.Sockets;
 using neyrd.core;
+using neyrd.core.Messages;
+using neyrd.core.Models.Messages;
 
 namespace neyrd.emitter.Networking;
 
-internal sealed class NeyrdSender(string emitterIpAddress)
+internal sealed class NeyrdSender(IPAddress emitterIpAddress) : IDisposable
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
@@ -14,13 +16,16 @@ internal sealed class NeyrdSender(string emitterIpAddress)
         try
         {
             await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), NeyrdConfiguration.DefaultListeningPort);
-            
-            await SendHandshakeMessageAsync();
-            
-            for(var i = 0; i < 10; i++)
+
+            await Send(HandshakeMessage.ToMessage(emitterIpAddress));
+            await Send(TestStartedMessage.ToMessage());
+
+            for (var i = 0; i < 10; i++)
             {
-                await SendTestMessageAsync();
+                await Send(TestMessage.ToMessage());
             }
+            
+            await Send(TestCompletedMessage.ToMessage());
         }
         catch (InvalidOperationException ex)
         {
@@ -39,23 +44,16 @@ internal sealed class NeyrdSender(string emitterIpAddress)
                 Exception = ex
             };
         }
-        
+
         return new ConnectionTestResult
         {
             IsSuccessful = true
         };
     }
 
-    private async Task SendHandshakeMessageAsync()
+    private async Task Send(IMessage message)
     {
-        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateMessageMessage(MessageType.Handshake, $"eip:{emitterIpAddress}")]);
-        _ = await _socket.SendAsync(buffer);
-    }
-
-    private async Task SendTestMessageAsync()
-    {
-        var buffer = new ArraySegment<byte>([.. MessageFactory.CreateMessageMessage(MessageType.Test, "neyrd test message==")]);
-        _ = await _socket.SendAsync(buffer);
+        _ = await _socket.SendAsync(message.Payload);
     }
 
     internal sealed class ConnectionTestResult
@@ -63,5 +61,10 @@ internal sealed class NeyrdSender(string emitterIpAddress)
         public bool IsSuccessful { get; init; }
         public string? ErrorMessage { get; init; }
         public Exception? Exception { get; init; }
+    }
+
+    public void Dispose()
+    {
+        _socket.Dispose();
     }
 }

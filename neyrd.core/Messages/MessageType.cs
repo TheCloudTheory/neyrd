@@ -1,4 +1,4 @@
-namespace neyrd.core;
+namespace neyrd.core.Messages;
 
 public enum MessageType
 {
