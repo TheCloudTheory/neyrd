@@ -9,6 +9,8 @@ public sealed class TestCompletedMessage(string payload) : IMessage
 
     public static TestCompletedMessage ToMessage()
     {
-        return new TestCompletedMessage(MessageFactory.Encode(["e", "test completed"], MessageType.TestStarted));
+        return new TestCompletedMessage(
+            MessageFactory.Encode([MessageOrigin.Emitter, DateTimeOffset.Now.Ticks.ToString()],
+                MessageType.TestStarted));
     }
 }

@@ -9,6 +9,6 @@ public sealed class HandshakeConfirmedMessage(string payload) : IMessage
 
     public static HandshakeConfirmedMessage ToMessage()
     {
-        return new HandshakeConfirmedMessage(MessageFactory.Encode(["r", "1"], MessageType.Acknowledgement));
+        return new HandshakeConfirmedMessage(MessageFactory.Encode([MessageOrigin.Receiver, "1"], MessageType.Acknowledgement));
     }
 }

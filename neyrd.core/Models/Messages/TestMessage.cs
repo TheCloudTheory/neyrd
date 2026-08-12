@@ -9,6 +9,6 @@ public sealed class TestMessage(string payload) : IMessage
 
     public static TestMessage ToMessage()
     {
-        return new TestMessage(MessageFactory.Encode(["e", DateTimeOffset.Now.Ticks.ToString()], MessageType.Test));
+        return new TestMessage(MessageFactory.Encode([MessageOrigin.Emitter, DateTimeOffset.Now.Ticks.ToString()], MessageType.Test));
     }
 }

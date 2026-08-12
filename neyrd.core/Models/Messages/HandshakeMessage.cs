@@ -10,6 +10,6 @@ public sealed class HandshakeMessage(string payload) : IMessage
 
     public static HandshakeConfirmedMessage ToMessage(IPAddress ipAddress)
     {
-        return new HandshakeConfirmedMessage(MessageFactory.Encode(["e", ipAddress.ToString()], MessageType.Acknowledgement));
+        return new HandshakeConfirmedMessage(MessageFactory.Encode([MessageOrigin.Emitter, ipAddress.ToString()], MessageType.Acknowledgement));
     }
 }
