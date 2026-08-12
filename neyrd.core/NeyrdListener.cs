@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using neyrd.core.Events;
+using neyrd.core.Models.Events;
 
 namespace neyrd.core;
 
@@ -60,6 +62,7 @@ public sealed class NeyrdListener(string ip)
                 if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
                 {
                     NeyrdLogger.Log($"Handshake: {message}");
+                    EventPipeline.Publish(HandshakeReceivedEvent.From(message));
                 }
             }
         }

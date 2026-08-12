@@ -8,6 +8,17 @@ public enum MessageType
     Test,
 
     /// <summary>
+    /// Indicates that a test has started, typically used to signal the initiation of a testing process.
+    /// </summary>
+    TestStarted,
+
+    /// <summary>
+    /// Indicates that a test has been completed. This message type is typically used
+    /// to signify the conclusion of a test process or operation.
+    /// </summary>
+    TestCompleted,
+
+    /// <summary>
     /// Represents an acknowledgement message type used to confirm the receipt of a message
     /// or signal the successful execution of an operation.
     /// </summary>

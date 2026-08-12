@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 
 namespace neyrd.core.Events;
 
-public sealed class EventPipeline
+public static class EventPipeline
 {
     private static readonly ConcurrentDictionary<string, INeyrdEventHandler[]> Handlers = new();
 
@@ -13,10 +13,15 @@ public sealed class EventPipeline
     /// <param name="event">The event to publish. It must implement the <c>INeyrdEvent</c> interface.</param>
     public static void Publish(INeyrdEvent @event)
     {
-        if (!Handlers.TryGetValue(@event.Type, out var handlers)) return;
+        if (!Handlers.TryGetValue(@event.Type, out var handlers))
+        {
+            NeyrdLogger.Log($"No handlers registered for event type '{@event.Type}'.");
+            return;
+        }
         
         foreach (var handler in handlers)
         {
+            NeyrdLogger.Log($"Handling event '{@event.Type}' with handler '{handler.GetType().Name}'.");
             handler.Handle(@event);
         }
     }
