@@ -32,7 +32,7 @@ public static class EventPipeline
 
         foreach (var handler in handlers)
         {
-            NeyrdLogger.Log($"Handling event '{TEvent.Type}' with handler '{handler.GetType().Name}'.");
+            NeyrdLogger.Log($"Handling event '{TEvent.Type}'.");
             handler.Handle(@event);
         }
     }

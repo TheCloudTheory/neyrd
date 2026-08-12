@@ -1,5 +1,9 @@
 ﻿using System.Net;
 using neyrd.core;
+using neyrd.core.Benchmark;
+using neyrd.core.Benchmark.Handlers;
+using neyrd.core.Events;
+using neyrd.emitter;
 using neyrd.emitter.Environment;
 using neyrd.emitter.Networking;
 using Spectre.Console;
@@ -29,6 +33,12 @@ AnsiConsole.WriteLine();
 
 AnsiConsole.WriteLine("Performing self-check if data can be collected...");
 
+AnsiConsole.WriteLine("Registering handlers...");
+
+EventPipeline.Subscribe(new TestStartedEventHandler());
+EventPipeline.Subscribe(new TestReceivedHandler());
+EventPipeline.Subscribe(new TestCompletedHandler());
+
 AnsiConsole.WriteLine("Initializing listener...");
 
 var cts = new CancellationTokenSource();
@@ -50,5 +60,27 @@ else
     AnsiConsole.WriteLine($"Error: {test.ErrorMessage}");
     AnsiConsole.WriteLine($"Exception: {test.Exception}");
 }
+
+AnsiConsole.WriteLine("Waiting for test to complete...");
+var i = 0;
+
+while(!TestSuite.HasCompleted && i < 100)
+{
+    i++;
+    await Task.Delay(100);
+}
+
+if(!TestSuite.HasCompleted)
+{
+    AnsiConsole.WriteLine("Test timed out.");
+    Environment.Exit(1);
+}
+else
+{
+    AnsiConsole.WriteLine("Test completed. Results:");
+    AnsiConsole.Write(TestSuite.DisplayResults());
+}
+
+
 
 Console.ReadKey();

@@ -3,7 +3,7 @@ using neyrd.core.Messages;
 
 namespace neyrd.core.Models.Events;
 
-internal sealed class TestCompletedEvent(long timestamp) : INeyrdEvent<long>
+public sealed class TestCompletedEvent(long timestamp) : INeyrdEvent<long>
 {
     public static string Type => "TestCompleted";
     public long Payload { get; } = timestamp;

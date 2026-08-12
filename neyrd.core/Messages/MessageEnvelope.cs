@@ -14,7 +14,7 @@ public sealed class MessageEnvelope(
     public static MessageEnvelope From(string message)
     {
         var decoded = MessageFactory.Decode(message);
-        var timestamp = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(decoded[0]));
+        var timestamp = new DateTimeOffset(long.Parse(decoded[0]), TimeSpan.Zero);
         var type = (MessageType)int.Parse(decoded[1]);
         var origin = decoded[2] == MessageOrigin.Emitter ? MessageOrigin.Kind.Emitter : MessageOrigin.Kind.Receiver;
 

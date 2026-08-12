@@ -4,14 +4,14 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using neyrd.core;
+using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Events;
-using neyrd.core.Models.Events;
 using neyrd.receiver.Handlers;
 using neyrd.receiver.Networking;
 
 namespace neyrd.receiver;
 
-public partial class App : Application
+public class App : Application
 {
     private readonly CancellationTokenSource _cts = new();
     private readonly NeyrdSender _sender = new();
@@ -40,6 +40,9 @@ public partial class App : Application
     private void InitializeEventHandlers()
     {
         EventPipeline.Subscribe(new HandshakeReceivedEventHandler(_sender));
+        EventPipeline.Subscribe(new TestStartedEventHandler());
+        EventPipeline.Subscribe(new TestReceivedHandler());
+        EventPipeline.Subscribe(new TestCompletedHandler());
     }
 
     private void InitializeReceiver()

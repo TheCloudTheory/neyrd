@@ -47,33 +47,40 @@ public sealed class NeyrdListener(string ip)
         
             foreach (var message in messages)
             {
-                NeyrdLogger.Log($"Processing message: {message}");
-            
-                var segments = message.Split(':');
-                var type = segments[1];
-                
-                if (MessageTypeComparer.IsEqual(type, MessageType.TestStarted))
+                try
                 {
-                    NeyrdLogger.Log($"Test started: {message}");
-                    EventPipeline.Publish<TestStartedEvent, long>(TestStartedEvent.From(MessageEnvelope.From(message)));
-                }
+                    NeyrdLogger.Log($"Processing message: {message}");
+            
+                    var segments = message.Split(':');
+                    var type = segments[1];
+                
+                    if (MessageTypeComparer.IsEqual(type, MessageType.TestStarted))
+                    {
+                        NeyrdLogger.Log($"Test started: {message}");
+                        EventPipeline.Publish<TestStartedEvent, long>(TestStartedEvent.From(MessageEnvelope.From(message)));
+                    }
 
-                if (MessageTypeComparer.IsEqual(type, MessageType.Test))
-                {
-                    NeyrdLogger.Log($"Test: {message}");
-                    EventPipeline.Publish<TestReceivedEvent, long>(TestReceivedEvent.From(MessageEnvelope.From(message)));
-                }
+                    if (MessageTypeComparer.IsEqual(type, MessageType.Test))
+                    {
+                        NeyrdLogger.Log($"Test: {message}");
+                        EventPipeline.Publish<TestReceivedEvent, long>(TestReceivedEvent.From(MessageEnvelope.From(message)));
+                    }
                 
-                if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
-                {
-                    NeyrdLogger.Log($"Test completed: {message}");
-                    EventPipeline.Publish<TestCompletedEvent, long>(TestCompletedEvent.From(MessageEnvelope.From(message)));
-                }
+                    if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
+                    {
+                        NeyrdLogger.Log($"Test completed: {message}");
+                        EventPipeline.Publish<TestCompletedEvent, long>(TestCompletedEvent.From(MessageEnvelope.From(message)));
+                    }
             
-                if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
+                    if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
+                    {
+                        NeyrdLogger.Log($"Handshake: {message}");
+                        EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
+                    }
+                }
+                catch (Exception ex)
                 {
-                    NeyrdLogger.Log($"Handshake: {message}");
-                    EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
+                    NeyrdLogger.Log($"Failed to process message '{message}': {ex.Message}");
                 }
             }
         }
