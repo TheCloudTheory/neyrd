@@ -1,62 +1,37 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using neyrd.core;
+using neyrd.core.Messages;
 
 namespace neyrd.receiver.Networking;
 
-internal sealed class NeyrdSender(string emitterIpAddress)
+internal sealed class NeyrdSender : IDisposable
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
 
-    public async Task<ConnectionTestResult> TestConnectionAsync()
+    private bool _isConnected;
+    
+    public void Connect(IPAddress emitterIpAddress)
     {
-        try
+        if (_isConnected)
         {
-            await _socket.ConnectAsync(IPAddress.Parse(emitterIpAddress), NeyrdConfiguration.DefaultListeningPort);
-            
-            for(var i = 0; i < 10; i++)
-            {
-                await SendTestMessageAsync();
-            }
+            return;
         }
-        catch (InvalidOperationException ex)
-        {
-            return new ConnectionTestResult
-            {
-                ErrorMessage =
-                    "The connection could not be established. Listener is already listening to another emitter.",
-                Exception = ex
-            };
-        }
-        catch (SocketException ex)
-        {
-            return new ConnectionTestResult
-            {
-                ErrorMessage = "The connection could not be established.",
-                Exception = ex
-            };
-        }
-        
-        return new ConnectionTestResult
-        {
-            IsSuccessful = true
-        };
+
+        _socket.Connect(emitterIpAddress, NeyrdConfiguration.DefaultListeningPort);
+        _isConnected = true;
     }
 
-    private async Task SendTestMessageAsync()
+    public async Task Send(IMessage message)
     {
-        var buffer = new ArraySegment<byte>([.. Encoding.UTF8.GetBytes($"{DateTimeOffset.Now.Ticks}|{(int)MessageType.Test}|neyrd test message==")]);
-        _ = await _socket.SendAsync(buffer);
+        _ = await _socket.SendAsync(message.Payload);
     }
 
-    internal sealed class ConnectionTestResult
+    public void Dispose()
     {
-        public bool IsSuccessful { get; init; }
-        public string? ErrorMessage { get; init; }
-        public Exception? Exception { get; init; }
+        _socket.Dispose();
     }
 }

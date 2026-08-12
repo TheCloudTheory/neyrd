@@ -2,6 +2,10 @@ namespace neyrd.core.Events;
 
 public interface INeyrdEvent
 {
-    string Type { get; }
-    object? Payload { get; }
+    static abstract string Type { get; }
+}
+
+public interface INeyrdEvent<out TPayload> : INeyrdEvent
+{
+    TPayload? Payload { get; }
 }

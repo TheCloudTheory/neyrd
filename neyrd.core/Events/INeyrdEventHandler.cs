@@ -1,6 +1,6 @@
 namespace neyrd.core.Events;
 
-public interface INeyrdEventHandler
+public interface INeyrdEventHandler<TEvent, in TPayload> where TEvent : INeyrdEvent<TPayload>
 {
-    void Handle(INeyrdEvent @event);
+    Task Handle(TEvent @event);
 }

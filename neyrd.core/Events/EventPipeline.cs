@@ -4,24 +4,35 @@ namespace neyrd.core.Events;
 
 public static class EventPipeline
 {
-    private static readonly ConcurrentDictionary<string, INeyrdEventHandler[]> Handlers = new();
+    private interface IHandlerWrapper
+    {
+        Task Handle(object @event);
+    }
+
+    private sealed class HandlerWrapper<TEvent, TPayload>(INeyrdEventHandler<TEvent, TPayload> handler) : IHandlerWrapper
+        where TEvent : INeyrdEvent<TPayload>
+    {
+        public Task Handle(object @event) => handler.Handle((TEvent)@event);
+    }
+    
+    private static readonly ConcurrentDictionary<string, IHandlerWrapper[]> Handlers = new();
 
     /// <summary>
     /// Publishes an event to all registered handlers that are subscribed to the event's type.
     /// Handlers for the event type will have their <c>Handle</c> method invoked.
     /// </summary>
     /// <param name="event">The event to publish. It must implement the <c>INeyrdEvent</c> interface.</param>
-    public static void Publish(INeyrdEvent @event)
+    public static void Publish<TEvent, TPayload>(TEvent @event) where TEvent : INeyrdEvent<TPayload>
     {
-        if (!Handlers.TryGetValue(@event.Type, out var handlers))
+        if (!Handlers.TryGetValue(TEvent.Type, out var handlers))
         {
-            NeyrdLogger.Log($"No handlers registered for event type '{@event.Type}'.");
+            NeyrdLogger.Log($"No handlers registered for event type '{TEvent.Type}'.");
             return;
         }
-        
+
         foreach (var handler in handlers)
         {
-            NeyrdLogger.Log($"Handling event '{@event.Type}' with handler '{handler.GetType().Name}'.");
+            NeyrdLogger.Log($"Handling event '{TEvent.Type}' with handler '{handler.GetType().Name}'.");
             handler.Handle(@event);
         }
     }
@@ -32,15 +43,13 @@ public static class EventPipeline
     /// </summary>
     /// <param name="handler">The event handler to be registered. It must implement the <c>INeyrdEventHandler</c> interface.</param>
     /// <typeparam name="TEvent">The type of event the handler will respond to.</typeparam>
-    public static void Subscribe<TEvent>(INeyrdEventHandler handler)
+    /// <typeparam name="TPayload"></typeparam>
+    public static void Subscribe<TEvent, TPayload>(INeyrdEventHandler<TEvent, TPayload> handler) where TEvent : INeyrdEvent<TPayload>
     {
-        var type = typeof(TEvent).Name;
-        if (!Handlers.TryGetValue(type, out var value))
-        {
-            value = [];
-            Handlers[type] = value;
-        }
+        var type = TEvent.Type;
         
-        Handlers[type] = [.. value, handler];
+        Handlers.AddOrUpdate(type,
+            _ => [new HandlerWrapper<TEvent, TPayload>(handler)],
+            (_, existing) => [.. existing, new HandlerWrapper<TEvent, TPayload>(handler)]);
     }
 }

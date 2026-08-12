@@ -3,12 +3,12 @@ using neyrd.core.Events;
 
 namespace neyrd.core.Models.Events;
 
-public sealed class HandshakeReceivedEvent(IPAddress ipAddress) : INeyrdEvent
+public sealed class HandshakeReceivedEvent(IPAddress ipAddress) : INeyrdEvent<IPAddress>
 {
-    public string Type => "HandshakeReceived";
-    public object Payload => ipAddress;
+    public static string Type => "HandshakeReceived";
+    public IPAddress Payload => ipAddress;
 
-    public static INeyrdEvent From(string message)
+    public static HandshakeReceivedEvent From(string message)
     {
         var segments = message.Split(':');
         var emitterIp = segments[0];

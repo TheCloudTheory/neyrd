@@ -4,12 +4,18 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using neyrd.core;
+using neyrd.core.Events;
+using neyrd.core.Models.Events;
+using neyrd.receiver.Handlers;
+using neyrd.receiver.Networking;
 
 namespace neyrd.receiver;
 
 public partial class App : Application
 {
     private readonly CancellationTokenSource _cts = new();
+    private readonly NeyrdSender _sender = new();
+    
     private NeyrdListener? _neyrdListener;
     
     public override void Initialize()
@@ -26,9 +32,16 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+        
+        InitializeEventHandlers();
         InitializeReceiver();
     }
-    
+
+    private void InitializeEventHandlers()
+    {
+        EventPipeline.Subscribe(new HandshakeReceivedEventHandler(_sender));
+    }
+
     private void InitializeReceiver()
     {
         _neyrdListener = new NeyrdListener(IPAddress.Loopback.ToString());
