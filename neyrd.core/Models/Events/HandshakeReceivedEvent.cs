@@ -1,5 +1,6 @@
 using System.Net;
 using neyrd.core.Events;
+using neyrd.core.Messages;
 
 namespace neyrd.core.Models.Events;
 
@@ -8,10 +9,9 @@ public sealed class HandshakeReceivedEvent(IPAddress ipAddress) : INeyrdEvent<IP
     public static string Type => "HandshakeReceived";
     public IPAddress Payload => ipAddress;
 
-    public static HandshakeReceivedEvent From(string message)
+    public static HandshakeReceivedEvent From(MessageEnvelope message)
     {
-        var segments = message.Split(':');
-        var emitterIp = segments[0];
+        var emitterIp = message.Segments[0];
         
         return new HandshakeReceivedEvent(IPAddress.Parse(emitterIp));
     }

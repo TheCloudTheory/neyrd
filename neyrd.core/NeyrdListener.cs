@@ -40,7 +40,6 @@ public sealed class NeyrdListener(string ip)
         {
             if (buffer.Array == null) break;
             
-            var now = DateTimeOffset.Now;
             var decoded = Encoding.UTF8.GetString(buffer.Array!, 0, result);
             var messages = decoded.Split("==").Where(m => !string.IsNullOrWhiteSpace(m)).ToArray();
         
@@ -50,20 +49,29 @@ public sealed class NeyrdListener(string ip)
             {
                 NeyrdLogger.Log($"Processing message: {message}");
             
-                var segments = message.Split('|');
-                var timestamp = long.Parse(segments[0]);
+                var segments = message.Split(':');
                 var type = segments[1];
+                
+                if (MessageTypeComparer.IsEqual(type, MessageType.TestStarted))
+                {
+                    NeyrdLogger.Log($"Test started: {message}");
+                    EventPipeline.Publish<TestStartedEvent, long>(TestStartedEvent.From(MessageEnvelope.From(message)));
+                }
 
                 if (MessageTypeComparer.IsEqual(type, MessageType.Test))
                 {
-                    var diff = now.Ticks - timestamp;
-                    NeyrdLogger.Log($"Received message with timestamp {timestamp} and diff {diff}");
+                    NeyrdLogger.Log($"Test: {message}");
+                }
+                
+                if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
+                {
+                    NeyrdLogger.Log($"Test completed: {message}");
                 }
             
                 if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
                 {
                     NeyrdLogger.Log($"Handshake: {message}");
-                    EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(HandshakeReceivedEvent.From(message));
+                    EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
                 }
             }
         }
