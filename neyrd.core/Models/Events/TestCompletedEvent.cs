@@ -1,0 +1,16 @@
+using neyrd.core.Events;
+using neyrd.core.Messages;
+
+namespace neyrd.core.Models.Events;
+
+internal sealed class TestCompletedEvent(long timestamp) : INeyrdEvent<long>
+{
+    public static string Type => "TestCompleted";
+    public long Payload { get; } = timestamp;
+    
+    public static TestCompletedEvent From(MessageEnvelope message)
+    {
+        var timestamp = long.Parse(message.Segments[0]);
+        return new TestCompletedEvent(timestamp);
+    }
+}

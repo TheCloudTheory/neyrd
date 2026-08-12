@@ -61,11 +61,13 @@ public sealed class NeyrdListener(string ip)
                 if (MessageTypeComparer.IsEqual(type, MessageType.Test))
                 {
                     NeyrdLogger.Log($"Test: {message}");
+                    EventPipeline.Publish<TestReceivedEvent, long>(TestReceivedEvent.From(MessageEnvelope.From(message)));
                 }
                 
                 if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
                 {
                     NeyrdLogger.Log($"Test completed: {message}");
+                    EventPipeline.Publish<TestCompletedEvent, long>(TestCompletedEvent.From(MessageEnvelope.From(message)));
                 }
             
                 if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))
