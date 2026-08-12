@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace neyrd.core.Benchmark;
 
 public static class TestSuite
@@ -15,9 +17,9 @@ public static class TestSuite
         Results.Add(timestamp);
     }
 
-    public static void Complete(long timestamp)
+    public static void Complete()
     {
-        End = timestamp;
+        End = DateTimeOffset.Now.Ticks;
     }
 
     private static long End { get; set; }
@@ -26,6 +28,10 @@ public static class TestSuite
 
     public static string DisplayResults()
     {
-        return $"Beginning: {Beginning}, End: {End}, Diff: {End - Beginning} Results: {string.Join(", ", Results)}";
+        const long ticksPerMs = TimeSpan.TicksPerMillisecond;
+        var durationMs = (End - Beginning) / (double)ticksPerMs;
+        var offsets = Results.Select(r => $"{(r - Beginning) / (double)ticksPerMs:F3}ms");
+        
+        return $"Duration: {durationMs.ToString("F3", CultureInfo.InvariantCulture)}ms | Hits: [{string.Join(", ", offsets)}]";
     }
 }

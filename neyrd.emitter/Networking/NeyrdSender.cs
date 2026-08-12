@@ -15,7 +15,7 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress) : IDisposable
     {
         try
         {
-            await _socket.ConnectAsync(IPAddress.Parse("127.0.0.1"), NeyrdConfiguration.DefaultListeningPort);
+            await _socket.ConnectAsync(emitterIpAddress, NeyrdConfiguration.DefaultListeningPort);
 
             await Send(HandshakeMessage.ToMessage(emitterIpAddress));
             await Send(TestStartedMessage.ToMessage());

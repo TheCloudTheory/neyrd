@@ -69,7 +69,7 @@ public sealed class NeyrdListener(string ip)
                     if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
                     {
                         NeyrdLogger.Log($"Test completed: {message}");
-                        EventPipeline.Publish<TestCompletedEvent, long>(TestCompletedEvent.From(MessageEnvelope.From(message)));
+                        EventPipeline.Publish<TestCompletedEvent, bool>(TestCompletedEvent.From(MessageEnvelope.From(message)));
                     }
             
                     if(MessageTypeComparer.IsEqual(type, MessageType.Handshake))

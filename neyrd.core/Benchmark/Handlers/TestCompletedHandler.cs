@@ -3,11 +3,11 @@ using neyrd.core.Models.Events;
 
 namespace neyrd.core.Benchmark.Handlers;
 
-public sealed class TestCompletedHandler : INeyrdEventHandler<TestCompletedEvent, long>
+public sealed class TestCompletedHandler : INeyrdEventHandler<TestCompletedEvent, bool>
 {
     public Task Handle(TestCompletedEvent @event)
     {
-        TestSuite.Complete(@event.Payload);
+        TestSuite.Complete();
         return Task.CompletedTask;
     }
 }

@@ -10,7 +10,7 @@ public sealed class TestCompletedMessage(string payload) : IMessage
     public static TestCompletedMessage ToMessage()
     {
         return new TestCompletedMessage(
-            MessageFactory.Encode([MessageOrigin.Emitter, DateTimeOffset.Now.Ticks.ToString()],
-                MessageType.TestStarted));
+            MessageFactory.Encode([MessageOrigin.Emitter, "eot"],
+                MessageType.TestCompleted));
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using neyrd.core.Events;
@@ -12,6 +13,20 @@ internal sealed class HandshakeReceivedEventHandler(NeyrdSender sender) : INeyrd
     public Task Handle(HandshakeReceivedEvent @event)
     {
         sender.Connect(@event.Payload);
-        return sender.Send(HandshakeConfirmedMessage.ToMessage());
+
+        var tasks = new List<Task>
+        {
+            sender.Send(HandshakeConfirmedMessage.ToMessage()),
+            sender.Send(TestStartedMessage.ToMessage())
+        };
+
+        for (var i = 0; i < 10; i++)
+        {
+            tasks.Add(sender.Send(TestMessage.ToMessage()));
+        }
+            
+        tasks.Add(sender.Send(TestCompletedMessage.ToMessage()));
+        
+        return Task.WhenAll(tasks);
     }
 }

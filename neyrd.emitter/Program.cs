@@ -81,6 +81,4 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
-
-
 Console.ReadKey();

@@ -8,8 +8,8 @@ public sealed class HandshakeMessage(string payload) : IMessage
 {
     public byte[] Payload { get; } = Encoding.UTF8.GetBytes(payload);
 
-    public static HandshakeConfirmedMessage ToMessage(IPAddress ipAddress)
+    public static HandshakeMessage ToMessage(IPAddress ipAddress)
     {
-        return new HandshakeConfirmedMessage(MessageFactory.Encode([MessageOrigin.Emitter, ipAddress.ToString()], MessageType.Acknowledgement));
+        return new HandshakeMessage(MessageFactory.Encode([MessageOrigin.Emitter, ipAddress.ToString()], MessageType.Handshake));
     }
 }

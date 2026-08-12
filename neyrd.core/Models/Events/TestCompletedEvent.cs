@@ -3,14 +3,13 @@ using neyrd.core.Messages;
 
 namespace neyrd.core.Models.Events;
 
-public sealed class TestCompletedEvent(long timestamp) : INeyrdEvent<long>
+public sealed class TestCompletedEvent : INeyrdEvent<bool>
 {
     public static string Type => "TestCompleted";
-    public long Payload { get; } = timestamp;
+    public bool Payload { get; } = true;
     
     public static TestCompletedEvent From(MessageEnvelope message)
     {
-        var timestamp = long.Parse(message.Segments[0]);
-        return new TestCompletedEvent(timestamp);
+        return new TestCompletedEvent();
     }
 }

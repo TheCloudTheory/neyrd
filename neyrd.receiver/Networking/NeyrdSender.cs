@@ -27,7 +27,14 @@ internal sealed class NeyrdSender : IDisposable
 
     public async Task Send(IMessage message)
     {
-        _ = await _socket.SendAsync(message.Payload);
+        try
+        {
+            _ = await _socket.SendAsync(message.Payload);
+        }
+        catch (Exception ex)
+        {
+            NeyrdLogger.Log($"Error sending message: {ex.Message}");
+        }
     }
 
     public void Dispose()
