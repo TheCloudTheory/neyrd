@@ -2,7 +2,7 @@ using System.Text;
 
 namespace neyrd.core;
 
-public sealed class MessageFactory
+public static class MessageFactory
 {
     public static byte[] CreateMessageMessage(MessageType type, string message)
     {
