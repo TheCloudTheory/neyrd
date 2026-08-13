@@ -47,7 +47,7 @@ public class App : Application
 
     private void InitializeReceiver()
     {
-        _neyrdListener = new NeyrdListener(IPAddress.Loopback.ToString());
+        _neyrdListener = new NeyrdListener(IPAddress.Loopback);
         _ = _neyrdListener.BeginListeningAsync(_cts.Token);
     }
 }

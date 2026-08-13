@@ -73,7 +73,7 @@ EventPipeline.Subscribe(new TestCompletedHandler());
 AnsiConsole.WriteLine("Initializing listener...");
 
 var cts = new CancellationTokenSource();
-var listener = new NeyrdListener(net.NetworkInterfaces.First());
+var listener = new NeyrdListener(IPAddress.Parse(net.NetworkInterfaces.First()));
 _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
