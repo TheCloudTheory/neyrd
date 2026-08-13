@@ -14,7 +14,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
     public string Name => "X11";
     public bool IsSupported => IsX11Available();
     
-    public ReadOnlySpan<byte> CaptureFrame()
+    public FrameData CaptureFrame()
     {
         throw new NotImplementedException();
     }

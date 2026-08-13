@@ -35,7 +35,7 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
     public string Name => "CoreGraphics";
     public bool IsSupported => IsCoreGraphicsAvailable();
     
-    public ReadOnlySpan<byte> CaptureFrame()
+    public FrameData CaptureFrame()
     {
         var display = CGMainDisplayID();
         var image = CGDisplayCreateImage(display);
@@ -56,7 +56,7 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
         CFRelease(cfData);
         CFRelease(image);
 
-        return bytes;
+        return new FrameData(width, height, bytes);
     }
 
     private bool IsCoreGraphicsAvailable()

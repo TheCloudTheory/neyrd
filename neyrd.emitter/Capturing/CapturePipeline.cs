@@ -6,7 +6,7 @@ namespace neyrd.emitter.Capturing;
 
 internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sender, CancellationToken cancellationToken)
 {
-    private static readonly Queue<Memory<byte>> Frames = new();
+    private static readonly Queue<FrameData> Frames = new();
     private Thread? _encodingThread;
     
     public async Task Begin()
@@ -26,7 +26,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            Frames.Enqueue(new Memory<byte>([.. adapter.CaptureFrame()]));
+            Frames.Enqueue(adapter.CaptureFrame());
             await Task.Delay((int)desiredInterval);
         }
     }
@@ -38,9 +38,9 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
             if(Frames.Count == 0) continue;
 
             var frame = Frames.Dequeue();
-            var encoded = EncodingStrategySelector.GetEncoder().Encode(frame.ToArray());
+            var encoded = EncodingStrategySelector.GetEncoder().Encode(frame.Data);
         
-            _ = sender.Send(FrameMessage.ToMessage(encoded.OriginalSize, encoded.EncodedLength, encoded.Data));
+            _ = sender.Send(FrameMessage.ToMessage(encoded.OriginalSize, encoded.EncodedLength, encoded.Data, frame.Width, frame.Height));
         }
     }
 }

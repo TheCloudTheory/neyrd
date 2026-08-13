@@ -7,5 +7,7 @@ public readonly record struct DecodedFrame(
     MessageOrigin.Kind Origin,
     int OriginalSize,
     int EncodedLength,
-    byte[] Data
+    byte[] Data,
+    int Width,
+    int Height
 );
