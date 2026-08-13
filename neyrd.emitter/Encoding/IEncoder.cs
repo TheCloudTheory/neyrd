@@ -2,5 +2,5 @@ namespace neyrd.emitter.Encoding;
 
 internal interface IEncoder
 {
-    EncodedFrame Encode(byte[] data);
+    EncodedFrame Encode(byte[]? data);
 }

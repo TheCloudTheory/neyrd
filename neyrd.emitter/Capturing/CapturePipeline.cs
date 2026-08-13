@@ -16,6 +16,8 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
             throw new InvalidOperationException("The capture adapter is not supported.");
         }
         
+        adapter.StartStream();
+        
         // Start a background thread responsible for encoding frames
         _encodingThread = new Thread(EncodeFrames);
         _encodingThread.Start();
@@ -42,5 +44,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
         
             _ = sender.Send(FrameMessage.ToMessage(encoded.OriginalSize, encoded.EncodedLength, encoded.Data, frame.Width, frame.Height));
         }
+        
+        adapter.StopStream();
     }
 }

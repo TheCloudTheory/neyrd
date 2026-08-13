@@ -11,6 +11,13 @@ using neyrd.emitter.Environment;
 using neyrd.emitter.Networking;
 using Spectre.Console;
 
+var adapterOption = args.SkipWhile(a => a != "--adapter").Skip(1).FirstOrDefault();
+if (string.IsNullOrWhiteSpace(adapterOption))
+{
+    AnsiConsole.Markup("[red]No adapter specified. Please provide an adapter using the --adapter option.[/]");
+    Environment.Exit(1);
+}
+
 AnsiConsole.Write(new FigletText("neyrd emitter").Color(Color.DodgerBlue1));
 AnsiConsole.Write(new Rule($"[grey]v{ThisAssembly.AssemblyInformationalVersion}[/]").LeftJustified());
 AnsiConsole.WriteLine();
@@ -117,7 +124,7 @@ else
 AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");
 
-var capture = new CapturePipeline(adapters.First(adapter => adapter.IsSupported), sender, cts.Token);
+var capture = new CapturePipeline(adapters.First(adapter => adapter.IsSupported && adapter.Name == adapterOption), sender, cts.Token);
 await capture.Begin();
 
 Console.ReadKey();
