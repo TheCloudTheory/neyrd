@@ -6,12 +6,11 @@ internal sealed class Lz4Encoder : IEncoder
 {
     public EncodedFrame Encode(byte[] data)
     {
-        var source = new byte[1000];
-        var target = new byte[LZ4Codec.MaximumOutputSize(source.Length)];
+        var target = new byte[LZ4Codec.MaximumOutputSize(data.Length)];
         var encodedLength = LZ4Codec.Encode(
-            source, 0, source.Length,
+            data, 0, data.Length,
             target, 0, target.Length);
         
-        return new EncodedFrame(data.Length, encodedLength, target);
+        return new EncodedFrame(data.Length, encodedLength, target[..encodedLength]);
     }
 }

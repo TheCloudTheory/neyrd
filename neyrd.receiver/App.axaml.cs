@@ -39,11 +39,17 @@ public class App : Application
 
     private void InitializeEventHandlers()
     {
+        var app = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
+        if (app.MainWindow is not MainWindow window)
+        {
+            return;
+        }
+        
         EventPipeline.Subscribe(new HandshakeReceivedEventHandler(_sender));
         EventPipeline.Subscribe(new TestStartedEventHandler());
         EventPipeline.Subscribe(new TestReceivedHandler());
         EventPipeline.Subscribe(new TestCompletedHandler());
-        EventPipeline.Subscribe(new FrameReceivedHandler());
+        EventPipeline.Subscribe(new FrameReceivedHandler(window));
     }
 
     private void InitializeReceiver()
