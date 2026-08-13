@@ -4,6 +4,9 @@ using neyrd.core.Benchmark;
 using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Events;
 using neyrd.emitter;
+using neyrd.emitter.Capturing;
+using neyrd.emitter.Capturing.CoreGraphics;
+using neyrd.emitter.Capturing.X11;
 using neyrd.emitter.Environment;
 using neyrd.emitter.Networking;
 using Spectre.Console;
@@ -32,6 +35,35 @@ AnsiConsole.Write(table);
 AnsiConsole.WriteLine();
 
 AnsiConsole.WriteLine("Performing self-check if data can be collected...");
+
+var adapters = new ICaptureAdapter[]
+{
+    new X11Capture(),
+    new CoreGraphicsCapture()
+};
+
+var atLeastOneAdapterSupported = false;
+foreach(var adapter in adapters)
+{
+    if(!adapter.IsSupported)
+    {
+        AnsiConsole.Markup($"[yellow]Adapter {adapter.Name} is not supported.[/]");
+        AnsiConsole.WriteLine();
+    }
+    else
+    {
+        AnsiConsole.Markup($"[green]Adapter {adapter.Name} is supported.[/]");
+        AnsiConsole.WriteLine();
+        
+        atLeastOneAdapterSupported = true;
+    }
+}
+
+if(!atLeastOneAdapterSupported)
+{
+    AnsiConsole.Markup("[red]No supported adapters found.[/]");
+    return;
+}
 
 AnsiConsole.WriteLine("Registering handlers...");
 
@@ -81,5 +113,6 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
+AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");
 Console.ReadKey();
