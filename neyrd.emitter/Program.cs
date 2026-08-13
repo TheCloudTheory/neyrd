@@ -81,4 +81,5 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
+AnsiConsole.WriteLine("Capturing. You can minimize the window.");
 Console.ReadKey();
