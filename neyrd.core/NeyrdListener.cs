@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using neyrd.core.Events;
 using neyrd.core.Messages;
@@ -35,89 +36,80 @@ public sealed class NeyrdListener(IPAddress ipAddress)
 
     private async Task HandleEmitted(Socket client, CancellationToken ct)
     {
-        var buffer = new ArraySegment<byte>(new byte[4096]);
-        int result;
-        while ((result = await client.ReceiveAsync(buffer, ct)) > 0)
+        var receiveBuffer = new byte[4096];
+        var reassembly = new List<byte>();
+
+        int bytesRead;
+        while ((bytesRead = await client.ReceiveAsync(receiveBuffer, ct)) > 0)
         {
-            if (buffer.Array == null) break;
-            if (buffer.Array[4] == (byte)MessageType.Frame)
+            reassembly.AddRange(receiveBuffer.AsSpan(0, bytesRead));
+
+            while (reassembly.Count >= 5) // need at least length (4) + marker (1)
             {
-                ProcessFrames(buffer, result);
-            }
-            else
-            {
-                ProcessReceivedMessages(buffer, result);
+                if (reassembly[4] == (byte)MessageType.Frame)
+                {
+                    if (reassembly.Count < 4) break;
+                    var messageLength = BinaryPrimitives.ReadInt32LittleEndian(
+                        CollectionsMarshal.AsSpan(reassembly));
+                    if (reassembly.Count < messageLength) break;
+
+                    var message = reassembly.GetRange(0, messageLength).ToArray();
+                    reassembly.RemoveRange(0, messageLength);
+                    EventPipeline.Publish<FrameReceivedEvent, byte[]>(FrameReceivedEvent.From(message));
+                }
+                else
+                {
+                    var asText = Encoding.UTF8.GetString(CollectionsMarshal.AsSpan(reassembly));
+                    var delimIdx = asText.IndexOf("==", StringComparison.Ordinal);
+                    if (delimIdx < 0) break;
+
+                    var message = asText[..delimIdx];
+                    var consumed = Encoding.UTF8.GetByteCount(asText[..(delimIdx + 2)]);
+                    reassembly.RemoveRange(0, consumed);
+                    ProcessReceivedMessages(message);
+                }
             }
         }
     }
 
-    private void ProcessFrames(ArraySegment<byte> buffer, int result)
+    private static void ProcessReceivedMessages(string message)
     {
-        var remaining = buffer.Array.AsSpan(0, result);
-        while (remaining.Length >= 4)
+        try
         {
-            var messageLength = BinaryPrimitives.ReadInt32LittleEndian(remaining);
-            if (remaining.Length < messageLength)
+            var segments = message.Split(':');
+            var type = segments[1];
+
+            if (MessageTypeComparer.IsEqual(type, MessageType.TestStarted))
             {
-                // incomplete frame, wait for more data
-                NeyrdLogger.Log("Received incomplete frame.");
-                break;
+                NeyrdLogger.Log($"Test started: {message}");
+                EventPipeline.Publish<TestStartedEvent, long>(
+                    TestStartedEvent.From(MessageEnvelope.From(message)));
             }
 
-            var message = remaining[..messageLength];
-            EventPipeline.Publish<FrameReceivedEvent, byte[]>(
-                FrameReceivedEvent.From([.. message]));
+            if (MessageTypeComparer.IsEqual(type, MessageType.Test))
+            {
+                NeyrdLogger.Log($"Test: {message}");
+                EventPipeline.Publish<TestReceivedEvent, long>(
+                    TestReceivedEvent.From(MessageEnvelope.From(message)));
+            }
 
-            remaining = remaining[messageLength..];
+            if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
+            {
+                NeyrdLogger.Log($"Test completed: {message}");
+                EventPipeline.Publish<TestCompletedEvent, bool>(
+                    TestCompletedEvent.From(MessageEnvelope.From(message)));
+            }
+
+            if (MessageTypeComparer.IsEqual(type, MessageType.Handshake))
+            {
+                NeyrdLogger.Log($"Handshake: {message}");
+                EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(
+                    HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
+            }
         }
-    }
-
-    private static void ProcessReceivedMessages(ArraySegment<byte> buffer, int result)
-    {
-        var decoded = Encoding.UTF8.GetString(buffer.Array!, 0, result);
-        var messages = decoded.Split("==").Where(m => !string.IsNullOrWhiteSpace(m)).ToArray();
-
-        NeyrdLogger.Log($"Received {messages.Length} messages");
-
-        foreach (var message in messages)
+        catch (Exception ex)
         {
-            try
-            {
-                var segments = message.Split(':');
-                var type = segments[1];
-
-                if (MessageTypeComparer.IsEqual(type, MessageType.TestStarted))
-                {
-                    NeyrdLogger.Log($"Test started: {message}");
-                    EventPipeline.Publish<TestStartedEvent, long>(
-                        TestStartedEvent.From(MessageEnvelope.From(message)));
-                }
-
-                if (MessageTypeComparer.IsEqual(type, MessageType.Test))
-                {
-                    NeyrdLogger.Log($"Test: {message}");
-                    EventPipeline.Publish<TestReceivedEvent, long>(
-                        TestReceivedEvent.From(MessageEnvelope.From(message)));
-                }
-
-                if (MessageTypeComparer.IsEqual(type, MessageType.TestCompleted))
-                {
-                    NeyrdLogger.Log($"Test completed: {message}");
-                    EventPipeline.Publish<TestCompletedEvent, bool>(
-                        TestCompletedEvent.From(MessageEnvelope.From(message)));
-                }
-
-                if (MessageTypeComparer.IsEqual(type, MessageType.Handshake))
-                {
-                    NeyrdLogger.Log($"Handshake: {message}");
-                    EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(
-                        HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
-                }
-            }
-            catch (Exception ex)
-            {
-                NeyrdLogger.Log($"Failed to process message '{message}': {ex.Message}");
-            }
+            NeyrdLogger.Log($"Failed to process message '{message}': {ex.Message}");
         }
     }
 }
