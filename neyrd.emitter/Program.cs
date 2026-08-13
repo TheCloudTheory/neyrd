@@ -3,7 +3,6 @@ using neyrd.core;
 using neyrd.core.Benchmark;
 using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Events;
-using neyrd.emitter;
 using neyrd.emitter.Capturing;
 using neyrd.emitter.Capturing.CoreGraphics;
 using neyrd.emitter.Capturing.X11;
@@ -79,8 +78,8 @@ _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
 
-var connectionManager = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()));
-var test = await connectionManager.TestConnectionAsync();
+var sender = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()));
+var test = await sender.TestConnectionAsync();
 
 if(test.IsSuccessful)
 {
@@ -115,4 +114,8 @@ else
 
 AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");
+
+var capture = new CapturePipeline(adapters.First(adapter => adapter.IsSupported), sender, cts.Token);
+await capture.Begin();
+
 Console.ReadKey();

@@ -4,4 +4,6 @@ internal interface ICaptureAdapter
 {
     string Name { get; }
     bool IsSupported { get; }
+    
+    ReadOnlySpan<byte> CaptureFrame();
 }

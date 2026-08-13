@@ -28,7 +28,13 @@ public enum MessageType
     /// Represents a handshake message type used during the initial connection
     /// phase to establish communication between a sender and a receiver.
     /// </summary>
-    Handshake
+    Handshake,
+
+    /// <summary>
+    /// Represents a frame message type, typically used for transmitting
+    /// encoded data frames with associated metadata, such as size or length.
+    /// </summary>
+    Frame
 }
 
 public static class MessageTypeComparer

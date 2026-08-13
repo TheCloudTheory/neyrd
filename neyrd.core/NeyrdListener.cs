@@ -77,6 +77,11 @@ public sealed class NeyrdListener(string ip)
                         NeyrdLogger.Log($"Handshake: {message}");
                         EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
                     }
+                    
+                    if(MessageTypeComparer.IsEqual(type, MessageType.Frame))
+                    {
+                        NeyrdLogger.Log($"Frame: {message}");
+                    }
                 }
                 catch (Exception ex)
                 {

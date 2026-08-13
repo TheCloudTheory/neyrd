@@ -51,7 +51,7 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress) : IDisposable
         };
     }
 
-    private async Task Send(IMessage message)
+    public async Task Send(IMessage message)
     {
         _ = await _socket.SendAsync(message.Payload);
     }

@@ -11,8 +11,53 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
     [LibraryImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
     private static partial IntPtr CGDisplayCreateImage(IntPtr display);
     
+    [LibraryImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+    private static partial IntPtr CGImageGetDataProvider(IntPtr image);
+
+    [LibraryImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+    private static partial IntPtr CGDataProviderCopyData(IntPtr provider);
+
+    [LibraryImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+    private static partial nint CGImageGetWidth(IntPtr image);
+
+    [LibraryImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+    private static partial nint CGImageGetHeight(IntPtr image);
+
+    [LibraryImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+    private static partial IntPtr CFDataGetBytePtr(IntPtr cfData);
+
+    [LibraryImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+    private static partial nint CFDataGetLength(IntPtr cfData);
+
+    [LibraryImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+    private static partial void CFRelease(IntPtr cf);
+    
     public string Name => "CoreGraphics";
     public bool IsSupported => IsCoreGraphicsAvailable();
+    
+    public ReadOnlySpan<byte> CaptureFrame()
+    {
+        var display = CGMainDisplayID();
+        var image = CGDisplayCreateImage(display);
+        
+        var width = (int)CGImageGetWidth(image);
+        var height = (int)CGImageGetHeight(image);
+
+        var provider = CGImageGetDataProvider(image);
+        var cfData = CGDataProviderCopyData(provider);
+
+        var ptr = CFDataGetBytePtr(cfData);
+        var length = (int)CFDataGetLength(cfData);
+
+        // copy before releasing — format is BGRA, width*height*4 bytes
+        var bytes = new byte[length];
+        Marshal.Copy(ptr, bytes, 0, length);
+
+        CFRelease(cfData);
+        CFRelease(image);
+
+        return bytes;
+    }
 
     private bool IsCoreGraphicsAvailable()
     {
