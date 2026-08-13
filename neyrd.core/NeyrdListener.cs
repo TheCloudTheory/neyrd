@@ -62,10 +62,11 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                 // incomplete frame, wait for more data
                 NeyrdLogger.Log("Received incomplete frame.");
                 break;
-            } 
+            }
 
-            var decoded = MessageFactory.Decode(remaining[..messageLength].ToArray());
-            NeyrdLogger.Log($"Received frame: {decoded}");
+            var message = remaining[..messageLength];
+            EventPipeline.Publish<FrameReceivedEvent, byte[]>(
+                FrameReceivedEvent.From([.. message]));
 
             remaining = remaining[messageLength..];
         }

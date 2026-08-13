@@ -6,7 +6,7 @@ internal sealed class EncodingStrategySelector
 {
     private static readonly IEncoder[] Encoders =
     [
-        new LZ4Encoder()
+        new Lz4Encoder()
     ];
     
     public static IEncoder GetEncoder()

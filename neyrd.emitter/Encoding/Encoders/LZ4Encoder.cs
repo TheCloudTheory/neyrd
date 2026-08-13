@@ -2,7 +2,7 @@ using K4os.Compression.LZ4;
 
 namespace neyrd.emitter.Encoding.Encoders;
 
-internal sealed class LZ4Encoder : IEncoder
+internal sealed class Lz4Encoder : IEncoder
 {
     public EncodedFrame Encode(byte[] data)
     {

@@ -42,6 +42,5 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
         
             _ = sender.Send(FrameMessage.ToMessage(encoded.OriginalSize, encoded.EncodedLength, encoded.Data));
         }
-        
     }
 }
