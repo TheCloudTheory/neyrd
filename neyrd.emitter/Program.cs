@@ -5,6 +5,7 @@ using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Events;
 using neyrd.emitter.Capturing;
 using neyrd.emitter.Capturing.CoreGraphics;
+using neyrd.emitter.Capturing.ScreenCaptureKit;
 using neyrd.emitter.Capturing.X11;
 using neyrd.emitter.Environment;
 using neyrd.emitter.Networking;
@@ -38,7 +39,8 @@ AnsiConsole.WriteLine("Performing self-check if data can be collected...");
 var adapters = new ICaptureAdapter[]
 {
     new X11Capture(),
-    new CoreGraphicsCapture()
+    new CoreGraphicsCapture(),
+    new ScreenCaptureKitCapture()
 };
 
 var atLeastOneAdapterSupported = false;

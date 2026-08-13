@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\neyrd.core\neyrd.core.csproj" />
+      <None Include="../neyrd.wrappers/libneyrd_sckit.dylib" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
