@@ -10,6 +10,8 @@ namespace neyrd.receiver.Networking;
 
 public sealed class NeyrdSender : IDisposable
 {
+    private const int MaximumSocketErrors = 10;
+    
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
     
@@ -49,6 +51,7 @@ public sealed class NeyrdSender : IDisposable
     
     private async Task ConsumeAsync()
     {
+        var numberOfErrors = 0;
         await foreach (var message in _channel.Reader.ReadAllAsync())
         {
             try
@@ -58,6 +61,14 @@ public sealed class NeyrdSender : IDisposable
             catch (Exception ex)
             {
                 NeyrdLogger.Log($"Error sending message: {ex.Message}");
+                numberOfErrors++;
+
+                if (numberOfErrors <= MaximumSocketErrors) continue;
+                
+                // The error may not be recoverable, so stop to avoid flooding the log
+                // or overflowing any buffers
+                NeyrdLogger.Log($"Maximum number of errors reached: {numberOfErrors}");
+                break;
             }
         }
     }
