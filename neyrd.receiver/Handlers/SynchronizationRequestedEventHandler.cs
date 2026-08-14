@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using neyrd.core;
 using neyrd.core.Events;
 using neyrd.core.Models.Events;
 
@@ -10,10 +11,12 @@ internal sealed class SynchronizationRequestedEventHandler(MainWindow window) : 
 {
     public Task Handle(SynchronizationRequestedEvent @event)
     {
-        var t3 = DateTimeOffset.Now.Ticks;
-        var t1 = @event.Payload.Item2;
-        var tEmitter = @event.Payload.Item1; // emitter's clock at echo time
-        var offset = tEmitter - (t1 + t3) / 2;
+        var receiversCurrentClock = DateTimeOffset.Now.Ticks;
+        var receiversOldClock = @event.Payload.Item2;
+        var emittersClock = @event.Payload.Item1; 
+        var offset = emittersClock - (receiversOldClock + receiversCurrentClock) / 2;
+        
+        NeyrdLogger.Log($"Synchronization request received: {receiversCurrentClock}, {receiversOldClock}, {emittersClock}, {offset}");
         
         window.SetClockOffset(offset);
         return Task.CompletedTask;

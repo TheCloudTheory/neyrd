@@ -53,6 +53,9 @@ public partial class MainWindow : Window
 
             using var fb = FrameBitmap.Lock();
             Marshal.Copy(bgra, 0, fb.Address, bgra.Length);
+            // reassigning Source forces Avalonia to redraw
+            ScreenImage.Source = null;
+            ScreenImage.Source = FrameBitmap;
 
             ScreenImage.InvalidateVisual();
         });
@@ -61,8 +64,7 @@ public partial class MainWindow : Window
     public void UpdateStats(long decodedTimestamp)
     {
         var now = DateTimeOffset.Now.Ticks;
-        var latency = now - decodedTimestamp;
-        var latencyMs = (now - decodedTimestamp - Offset) / 10000;
+        var latencyMs = (now - decodedTimestamp + Offset) / 10000;
         
         Dispatcher.UIThread.Post(() => LatencyLabel.Text = $"Latency: {latencyMs} ms");
     }

@@ -132,6 +132,7 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
+AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Synchronizing emitter and receiver...");
 
 
