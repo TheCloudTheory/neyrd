@@ -27,7 +27,7 @@ internal sealed class X11Puppeter : IPuppeter
     [DllImport("libX11")]
     static extern int XDisplayHeight(IntPtr display, int screen);
     
-    [DllImport("libXtst")]
+    [DllImport("libXtst.so.6")]
     static extern int XTestFakeButtonEvent(IntPtr display, uint button, bool isPress, ulong delay);
     
     private IntPtr _display;
