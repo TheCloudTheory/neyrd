@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -16,6 +17,8 @@ namespace neyrd.receiver;
 public partial class MainWindow : Window
 {
     private readonly NeyrdSender _sender;
+
+    private long _pointerMovedControlTimestamp = 0;
     private WriteableBitmap? FrameBitmap { get; set; }
     
     public MainWindow(NeyrdSender sender)
@@ -34,8 +37,17 @@ public partial class MainWindow : Window
     
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
+        // Conceptually, there's no reason to fire this event more than 30 times
+        // per second - this is why we throttle it here. We deliberately skip thread
+        // safety here as this is supposed to be triggered by a single UI thread
+        var now = DateTimeOffset.Now.Ticks;
+        const double threshold = 1000d / 30;
+        if (now - _pointerMovedControlTimestamp < threshold) return;
+        
         var position = e.GetPosition(this);
         _ = _sender.Send(PointerMovedMessage.ToMessage(position.X, position.Y));
+        
+        _pointerMovedControlTimestamp = now;
     }
 
     public void UpdateFrame(byte[] bgra, int width, int height)
