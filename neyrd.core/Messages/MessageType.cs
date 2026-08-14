@@ -39,7 +39,12 @@ public enum MessageType
     /// <summary>
     /// Represents a synchronization message type used to ensure consistency or alignment between systems during communication.
     /// </summary>
-    Synchronization
+    Synchronization,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    Pointer
 }
 
 public static class MessageTypeComparer

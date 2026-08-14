@@ -27,7 +27,7 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            desktop.MainWindow = new MainWindow(_sender);
             desktop.Exit += (_, _) => _cts.Cancel();
         }
 

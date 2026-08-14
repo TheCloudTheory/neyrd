@@ -2,26 +2,40 @@ using System;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using neyrd.core;
 using neyrd.core.Environment;
+using neyrd.core.Models.Messages;
+using neyrd.receiver.Networking;
 
 namespace neyrd.receiver;
 
 public partial class MainWindow : Window
 {
+    private readonly NeyrdSender _sender;
     private WriteableBitmap? FrameBitmap { get; set; }
-
-    public MainWindow()
+    
+    public MainWindow(NeyrdSender sender)
     {
+        _sender = sender;
+        
         InitializeComponent();
         
         var ips = NetworkInfoCollector.NetworkInterfaces;
         IpLabel.Text = ips.Length > 0
             ? $"IP: {string.Join(", ", ips)}"
             : "IP: unavailable";
+
+        PointerMoved += OnPointerMoved;
+    }
+    
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        var position = e.GetPosition(this);
+        _ = _sender.Send(PointerMovedMessage.ToMessage(position.X, position.Y));
     }
 
     public void UpdateFrame(byte[] bgra, int width, int height)

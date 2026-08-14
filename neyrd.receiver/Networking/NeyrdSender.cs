@@ -7,7 +7,7 @@ using neyrd.core.Messages;
 
 namespace neyrd.receiver.Networking;
 
-internal sealed class NeyrdSender : IDisposable
+public sealed class NeyrdSender : IDisposable
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);

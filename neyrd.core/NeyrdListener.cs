@@ -120,6 +120,13 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                 EventPipeline.Publish<SynchronizationRequestedEvent, (long, long)>(
                     SynchronizationRequestedEvent.From(MessageEnvelope.From(message)));
             }
+
+            if (MessageTypeComparer.IsEqual(type, MessageType.Pointer))
+            {
+                NeyrdLogger.Log($"Pointer: {message}");
+                EventPipeline.Publish<PointerMovedEvent, (double, double)>(
+                    PointerMovedEvent.From(MessageEnvelope.From(message)));
+            }
         }
         catch (Exception ex)
         {
