@@ -51,12 +51,16 @@ public partial class MainWindow : Window
                 ScreenImage.Source = FrameBitmap;
             }
 
+            // Force alpha=255 to avoid issue when the emitted frame would have alpha channel
+            // to be set to 0 -> causing Avalonia to incorrectly interpret it if <Image>
+            // is inside a <Grid> or similar component
+            for (var i = 3; i < bgra.Length; i += 4)
+            {
+                bgra[i] = 255;
+            }
+            
             using var fb = FrameBitmap.Lock();
             Marshal.Copy(bgra, 0, fb.Address, bgra.Length);
-            // reassigning Source forces Avalonia to redraw
-            ScreenImage.Source = null;
-            ScreenImage.Source = FrameBitmap;
-
             ScreenImage.InvalidateVisual();
         });
     }
