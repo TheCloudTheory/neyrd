@@ -168,6 +168,7 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
+AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Checking resolution...");
 var resolution = puppeter.GetScreenSize();
 AnsiConsole.WriteLine($"Width: {resolution.width}, Height: {resolution.height}");
