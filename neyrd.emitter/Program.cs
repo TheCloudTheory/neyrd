@@ -18,6 +18,13 @@ if (string.IsNullOrWhiteSpace(adapterOption))
     Environment.Exit(1);
 }
 
+var receiverIpAddressOption = args.SkipWhile(a => a != "--receiver-ip").Skip(1).FirstOrDefault();
+if (string.IsNullOrWhiteSpace(receiverIpAddressOption))
+{
+    AnsiConsole.Markup("[red]No receiver IP address specified. Please provide an IP address using the --receiver-ip option.[/]");
+    Environment.Exit(1);
+}
+
 AnsiConsole.Write(new FigletText("neyrd emitter").Color(Color.DodgerBlue1));
 AnsiConsole.Write(new Rule($"[grey]v{ThisAssembly.AssemblyInformationalVersion}[/]").LeftJustified());
 AnsiConsole.WriteLine();
@@ -87,7 +94,7 @@ _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
 
-var sender = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()));
+var sender = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
 var test = await sender.TestConnectionAsync();
 
 if(test.IsSuccessful)

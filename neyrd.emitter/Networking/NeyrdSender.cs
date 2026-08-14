@@ -6,7 +6,7 @@ using neyrd.core.Models.Messages;
 
 namespace neyrd.emitter.Networking;
 
-internal sealed class NeyrdSender(IPAddress emitterIpAddress) : IDisposable
+internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiverIpAddress) : IDisposable
 {
     private readonly Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
@@ -26,7 +26,7 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress) : IDisposable
     {
         try
         {
-            await _socket.ConnectAsync(IPAddress.Loopback, NeyrdConfiguration.DefaultListeningPort);
+            await _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
 
             await Send(HandshakeMessage.ToMessage(emitterIpAddress));
             await Send(TestStartedMessage.ToMessage());
