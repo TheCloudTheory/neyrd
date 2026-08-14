@@ -53,10 +53,19 @@ internal sealed class X11Puppeter : IPuppeter
     {
         MovePointer(x, y);
         
-        // Note 1 - left button, 2 - middle, 3 - right
-        _ = XTestFakeButtonEvent(_display, 1, true, 0);
-        _ = XTestFakeButtonEvent(_display, 1, false, 0);
-        _ = XFlush(_display);
+        try
+        {
+            NeyrdLogger.Log($"Display: {_display != IntPtr.Zero}");
+            
+            // Note 1 - left button, 2 - middle, 3 - right
+            _ = XTestFakeButtonEvent(_display, 1, true, 0);
+            _ = XTestFakeButtonEvent(_display, 1, false, 0);
+            _ = XFlush(_display);
+        }
+        catch (DllNotFoundException ex)
+        {
+            NeyrdLogger.Log($"Error when handling pointer click: {ex.Message}");
+        }
     }
 
     public (int width, int height) GetScreenSize()
