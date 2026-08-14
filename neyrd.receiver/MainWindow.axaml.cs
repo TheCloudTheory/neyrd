@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
@@ -18,7 +19,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         
         var ips = NetworkInfoCollector.NetworkInterfaces;
-        StatusBar.Text = ips.Length > 0
+        IpLabel.Text = ips.Length > 0
             ? $"IP: {string.Join(", ", ips)}"
             : "IP: unavailable";
     }
@@ -56,4 +57,20 @@ public partial class MainWindow : Window
             ScreenImage.InvalidateVisual();
         });
     }
+
+    public void UpdateStats(long decodedTimestamp)
+    {
+        var now = DateTimeOffset.Now.Ticks;
+        var latency = now - decodedTimestamp;
+        var latencyMs = (now - decodedTimestamp - Offset) / 10000;
+        
+        Dispatcher.UIThread.Post(() => LatencyLabel.Text = $"Latency: {latencyMs} ms");
+    }
+
+    public void SetClockOffset(long offset)
+    {
+        Offset = offset;
+    }
+
+    private long Offset { get; set; }
 }

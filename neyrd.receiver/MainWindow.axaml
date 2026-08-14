@@ -8,7 +8,10 @@
 
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Background="#1e1e1e" Padding="8,4">
-            <TextBlock x:Name="StatusBar" Foreground="#aaaaaa" FontSize="12" />
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock x:Name="IpLabel" Foreground="#aaaaaa" FontSize="12" />
+                <TextBlock x:Name="LatencyLabel" Foreground="#aaaaaa" FontSize="12" />
+            </StackPanel>
         </Border>
         <Grid>
             <TextBlock x:Name="Placeholder" Text="Waiting for the emitter..."

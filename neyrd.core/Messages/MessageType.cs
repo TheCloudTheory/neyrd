@@ -34,7 +34,12 @@ public enum MessageType
     /// Represents a frame message type, typically used for transmitting
     /// encoded data frames with associated metadata, such as size or length.
     /// </summary>
-    Frame
+    Frame,
+
+    /// <summary>
+    /// Represents a synchronization message type used to ensure consistency or alignment between systems during communication.
+    /// </summary>
+    Synchronization
 }
 
 public static class MessageTypeComparer

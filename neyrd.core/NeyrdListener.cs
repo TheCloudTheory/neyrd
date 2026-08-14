@@ -106,6 +106,20 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                 EventPipeline.Publish<HandshakeReceivedEvent, IPAddress>(
                     HandshakeReceivedEvent.From(MessageEnvelope.From(message)));
             }
+
+            if (MessageTypeComparer.IsEqual(type, MessageType.Acknowledgement))
+            {
+                NeyrdLogger.Log($"Acknowledgement: {message}");
+                EventPipeline.Publish<AcknowledgementReceivedEvent, long>(
+                    AcknowledgementReceivedEvent.From(MessageEnvelope.From(message)));
+            }
+            
+            if (MessageTypeComparer.IsEqual(type, MessageType.Synchronization))
+            {
+                NeyrdLogger.Log($"Synchronization: {message}");
+                EventPipeline.Publish<SynchronizationRequestedEvent, (long, long)>(
+                    SynchronizationRequestedEvent.From(MessageEnvelope.From(message)));
+            }
         }
         catch (Exception ex)
         {

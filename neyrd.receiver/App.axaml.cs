@@ -49,7 +49,8 @@ public class App : Application
         EventPipeline.Subscribe(new TestStartedEventHandler());
         EventPipeline.Subscribe(new TestReceivedHandler());
         EventPipeline.Subscribe(new TestCompletedHandler());
-        EventPipeline.Subscribe(new FrameReceivedHandler(window));
+        EventPipeline.Subscribe(new FrameReceivedEventHandler(window));
+        EventPipeline.Subscribe(new SynchronizationRequestedEventHandler(window));
     }
 
     private void InitializeReceiver()

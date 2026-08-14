@@ -9,6 +9,7 @@ using neyrd.emitter.Capturing.CoreGraphics;
 using neyrd.emitter.Capturing.ScreenCaptureKit;
 using neyrd.emitter.Capturing.X11;
 using neyrd.emitter.Environment;
+using neyrd.emitter.Handlers;
 using neyrd.emitter.Networking;
 using Spectre.Console;
 
@@ -83,9 +84,12 @@ if(!atLeastOneAdapterSupported)
 
 AnsiConsole.WriteLine("Registering handlers...");
 
+var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
+
 EventPipeline.Subscribe(new TestStartedEventHandler());
 EventPipeline.Subscribe(new TestReceivedHandler());
 EventPipeline.Subscribe(new TestCompletedHandler());
+EventPipeline.Subscribe(new AcknowledgementReceivedHandler(sender));
 
 AnsiConsole.WriteLine("Initializing listener...");
 
@@ -95,7 +99,6 @@ _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
 
-var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
 var test = await sender.TestConnectionAsync();
 
 if(test.IsSuccessful)
@@ -128,6 +131,9 @@ else
     AnsiConsole.WriteLine("Test completed. Results:");
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
+
+AnsiConsole.WriteLine("Synchronizing emitter and receiver...");
+
 
 AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");

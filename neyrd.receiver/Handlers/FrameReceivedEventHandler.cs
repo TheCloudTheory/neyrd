@@ -8,7 +8,7 @@ using neyrd.receiver.Decoding;
 
 namespace neyrd.receiver.Handlers;
 
-internal sealed class FrameReceivedHandler(MainWindow window) : INeyrdEventHandler<FrameReceivedEvent, byte[]>
+internal sealed class FrameReceivedEventHandler(MainWindow window) : INeyrdEventHandler<FrameReceivedEvent, byte[]>
 {
     public Task Handle(FrameReceivedEvent @event)
     {
@@ -18,7 +18,9 @@ internal sealed class FrameReceivedHandler(MainWindow window) : INeyrdEventHandl
         try
         {
             var frame = DecodingStrategySelector.GetDecoder().Decode(decoded);
+            
             window.UpdateFrame(frame, decoded.Width, decoded.Height);
+            window.UpdateStats(decoded.Timestamp);
         
             return Task.CompletedTask;
         }
