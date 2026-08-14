@@ -89,6 +89,7 @@ var puppeters = new IPuppeter[]
     new X11Puppeter()
 };
 
+var atLeastOnePuppeterSupported = false;
 foreach(var adapter in puppeters)
 {
     if(!adapter.IsSupported)
@@ -101,25 +102,28 @@ foreach(var adapter in puppeters)
         AnsiConsole.Markup($"[green]Puppeter {adapter.Name} is supported.[/]");
         AnsiConsole.WriteLine();
         
-        atLeastOneAdapterSupported = true;
+        atLeastOnePuppeterSupported = true;
     }
 }
 
-if(!atLeastOneAdapterSupported)
+if(!atLeastOnePuppeterSupported)
 {
     AnsiConsole.Markup("[red]No supported puppeters found.[/]");
     return;
 }
 
+var puppeter = puppeters.First(puppeter => puppeter.IsSupported && puppeter.Name == adapterOption);
+AnsiConsole.WriteLine($"Initializing puppeter `{puppeter.Name}`...");
+puppeter.Initialize();
+
 AnsiConsole.WriteLine("Registering handlers...");
 
 var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
-
 EventPipeline.Subscribe(new TestStartedEventHandler());
 EventPipeline.Subscribe(new TestReceivedHandler());
 EventPipeline.Subscribe(new TestCompletedHandler());
 EventPipeline.Subscribe(new AcknowledgementReceivedEventHandler(sender));
-EventPipeline.Subscribe(new PointerMovedEventHandler(puppeters.First(puppeter => puppeter.IsSupported && puppeter.Name == adapterOption)));
+EventPipeline.Subscribe(new PointerMovedEventHandler(puppeter));
 
 AnsiConsole.WriteLine("Initializing listener...");
 
@@ -173,3 +177,8 @@ var capture = new CapturePipeline(adapters.First(adapter => adapter.IsSupported 
 await capture.Begin();
 
 Console.ReadKey();
+
+AnsiConsole.WriteLine("Cleanup...");
+
+puppeter.Dispose();
+sender.Dispose();
