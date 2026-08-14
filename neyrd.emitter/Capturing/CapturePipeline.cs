@@ -1,3 +1,4 @@
+using neyrd.core;
 using neyrd.core.Models.Messages;
 using neyrd.emitter.Encoding;
 using neyrd.emitter.Networking;
@@ -7,6 +8,8 @@ namespace neyrd.emitter.Capturing;
 internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sender, CancellationToken cancellationToken)
 {
     private static readonly Queue<FrameData> Frames = new();
+    private static readonly Queue<EncodedFrame> EncodedFrames = new();
+    
     private Thread? _encodingThread;
     
     public async Task Begin()
@@ -19,7 +22,10 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
         adapter.StartStream();
         
         // Start a background thread responsible for encoding frames
-        _encodingThread = new Thread(EncodeFrames);
+        _encodingThread = new Thread(EncodeFrames)
+        {
+            Priority = ThreadPriority.AboveNormal
+        };
         _encodingThread.Start();
         
         // Begin capturing by capping up to 30 FPS
@@ -28,7 +34,22 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            Frames.Enqueue(adapter.CaptureFrame());
+            var capturedFrame = adapter.CaptureFrame();
+            Frames.Enqueue(capturedFrame);
+
+            if (EncodedFrames.TryDequeue(out var frame))
+            {
+                var success = await sender.Send(FrameMessage.ToMessage(frame.OriginalSize, frame.EncodedLength,
+                    frame.Data, capturedFrame.Width, capturedFrame.Height));
+                if (!success)
+                {
+                    NeyrdLogger.Log($"Failed to send frame. Attempting to reconnect...");
+                    
+                    await Task.Delay(5000);
+                    await sender.Reconnect();
+                }
+            }
+
             await Task.Delay((int)desiredInterval);
         }
     }
@@ -42,7 +63,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
             var frame = Frames.Dequeue();
             var encoded = EncodingStrategySelector.GetEncoder().Encode(frame.Data);
         
-            _ = sender.Send(FrameMessage.ToMessage(encoded.OriginalSize, encoded.EncodedLength, encoded.Data, frame.Width, frame.Height));
+            EncodedFrames.Enqueue(encoded);
         }
         
         adapter.StopStream();

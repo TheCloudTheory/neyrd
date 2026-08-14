@@ -8,7 +8,7 @@ namespace neyrd.emitter.Networking;
 
 internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiverIpAddress) : IDisposable
 {
-    private readonly Socket _socket = new(SocketType.Stream,
+    private Socket _socket = new(SocketType.Stream,
         ProtocolType.Tcp);
 
     /// <summary>
@@ -72,15 +72,30 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
         };
     }
 
-    public async Task Send(IMessage message)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public async Task<bool> Send(IMessage message)
     {
         try
         {
             _ = await _socket.SendAsync(message.Payload);
+            return true;
         }
         catch (SocketException ex)
         {
             NeyrdLogger.Log($"Failed to  send message: {ex.Message}. Error code: {ex.SocketErrorCode}");
+
+            // If receiver has been closed / crashed, just gracefully stop, clear
+            // the state and attempt reconnection
+            if (ex.SocketErrorCode == SocketError.Shutdown)
+            {
+                _socket.Dispose();
+            }
+            
+            return false;
         }
     }
 
@@ -94,5 +109,12 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
     public void Dispose()
     {
         _socket.Dispose();
+    }
+
+    public Task Reconnect()
+    {
+        _socket = new Socket(SocketType.Stream,
+            ProtocolType.Tcp);
+        return _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
     }
 }
