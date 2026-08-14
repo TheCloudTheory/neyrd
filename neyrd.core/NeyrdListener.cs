@@ -27,9 +27,12 @@ public sealed class NeyrdListener(IPAddress ipAddress)
         _socket.Bind(ep);
         _socket.Listen(Backlog);
 
+        Socket? current = null;
         while (!ct.IsCancellationRequested)
         {
             var client = await _socket.AcceptAsync(ct);
+            current?.Dispose(); // close the previous connection before handling the new one
+            current = client;
             _ = Task.Run(() => HandleEmitted(client, ct), ct);
         }
     }
