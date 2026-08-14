@@ -90,7 +90,7 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
 
             // If receiver has been closed / crashed, just gracefully stop, clear
             // the state and attempt reconnection
-            if (ex.SocketErrorCode == SocketError.Shutdown)
+            if (ex.SocketErrorCode is SocketError.Shutdown or SocketError.ConnectionReset)
             {
                 _socket.Dispose();
             }
@@ -111,10 +111,17 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
         _socket.Dispose();
     }
 
-    public Task Reconnect()
+    public async Task Reconnect()
     {
-        _socket = new Socket(SocketType.Stream,
-            ProtocolType.Tcp);
-        return _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
+        try
+        {
+            _socket = new Socket(SocketType.Stream,
+                ProtocolType.Tcp);
+            await _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
+        }
+        catch (SocketException ex)
+        {
+            NeyrdLogger.Log($"Failed to connect to receiver. Error code: {ex.SocketErrorCode}");
+        }
     }
 }

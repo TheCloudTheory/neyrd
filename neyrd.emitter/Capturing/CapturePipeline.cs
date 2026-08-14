@@ -2,6 +2,7 @@ using neyrd.core;
 using neyrd.core.Models.Messages;
 using neyrd.emitter.Encoding;
 using neyrd.emitter.Networking;
+using Spectre.Console;
 
 namespace neyrd.emitter.Capturing;
 
@@ -43,7 +44,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
                     frame.Data, capturedFrame.Width, capturedFrame.Height));
                 if (!success)
                 {
-                    NeyrdLogger.Log($"Failed to send frame. Attempting to reconnect...");
+                    AnsiConsole.WriteLine($"Failed to send frame. Attempting to reconnect...");
                     
                     await Task.Delay(5000);
                     await sender.Reconnect();
