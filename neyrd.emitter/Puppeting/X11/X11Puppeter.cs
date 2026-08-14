@@ -68,6 +68,17 @@ internal sealed class X11Puppeter : IPuppeter
         }
     }
 
+    public void HandleWheel(double deltaLength, double deltaX, double deltaY)
+    {
+        // X11 maps scroll to button events: 4=up, 5=down, 6=left, 7=right
+        var button = deltaY < 0 ? 4u : 5u;
+        if (deltaX != 0) button = deltaX < 0 ? 6u : 7u;
+
+        _ = XTestFakeButtonEvent(_display, button, true, 0);
+        _ = XTestFakeButtonEvent(_display, button, false, 0);
+        _ = XFlush(_display);
+    }
+
     public (int width, int height) GetScreenSize()
     {
         var width = XDisplayWidth(_display, 0);

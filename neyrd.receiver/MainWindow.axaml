@@ -6,7 +6,8 @@
         x:Class="neyrd.receiver.MainWindow"
         Title="neyrd.receiver"
         PointerMoved="OnPointerMoved"
-        PointerPressed="OnPointerPressed">
+        PointerPressed="OnPointerPressed"
+        PointerWheelChanged="OnPointerWheelChanged">
 
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Background="#1e1e1e" Padding="8,4">
