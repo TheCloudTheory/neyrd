@@ -49,7 +49,12 @@ public enum MessageType
     /// <summary>
     /// 
     /// </summary>
-    Screen
+    Screen,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    PointerPressed
 }
 
 public static class MessageTypeComparer

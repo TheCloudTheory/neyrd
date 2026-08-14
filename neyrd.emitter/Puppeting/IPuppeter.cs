@@ -10,5 +10,6 @@ internal interface IPuppeter : IDisposable
 
     void Initialize();
     void MovePointer(double x, double y);
+    void HandleClick(double x, double y);
     (int width, int height) GetScreenSize();
 }

@@ -27,6 +27,9 @@ internal sealed class X11Puppeter : IPuppeter
     [DllImport("libX11")]
     static extern int XDisplayHeight(IntPtr display, int screen);
     
+    [DllImport("libXtst")]
+    static extern int XTestFakeButtonEvent(IntPtr display, uint button, bool isPress, ulong delay);
+    
     private IntPtr _display;
     private ulong _root;
 
@@ -43,6 +46,16 @@ internal sealed class X11Puppeter : IPuppeter
     public void MovePointer(double x, double y)
     {
         _ = XWarpPointer(_display, 0, _root, 0, 0, 0, 0, (int)x, (int)y);
+        _ = XFlush(_display);
+    }
+
+    public void HandleClick(double x, double y)
+    {
+        MovePointer(x, y);
+        
+        // Note 1 - left button, 2 - middle, 3 - right
+        _ = XTestFakeButtonEvent(_display, 1, true, 0);
+        _ = XTestFakeButtonEvent(_display, 1, false, 0);
         _ = XFlush(_display);
     }
 

@@ -11,7 +11,7 @@ public sealed class PointerMovedMessage(string message) : IMessage
     public static PointerMovedMessage ToMessage(double x, double y)
     {
         return new PointerMovedMessage(MessageFactory.Encode(
-            [MessageOrigin.Emitter, x.ToString(CultureInfo.InvariantCulture), y.ToString(CultureInfo.InvariantCulture)],
+            [MessageOrigin.Receiver, x.ToString(CultureInfo.InvariantCulture), y.ToString(CultureInfo.InvariantCulture)],
             MessageType.Pointer));
     }
 }

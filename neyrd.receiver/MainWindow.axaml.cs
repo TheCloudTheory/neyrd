@@ -33,6 +33,7 @@ public partial class MainWindow : Window
             : "IP: unavailable";
 
         PointerMoved += OnPointerMoved;
+        PointerPressed += OnPointerPressed;
     }
     
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -47,12 +48,27 @@ public partial class MainWindow : Window
         // The desired position needs to be downscaled / upscaled depending
         // on the size of the window and the actual emitted resolution
         var position = e.GetPosition(ScreenImage);
+        var mousePosition = GetMousePosition(position);
+        
+        _ = _sender.Send(PointerMovedMessage.ToMessage(mousePosition.x, mousePosition.y));
+        
+        _pointerMovedControlTimestamp = now;
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var position = e.GetPosition(ScreenImage);
+        var mousePosition = GetMousePosition(position);
+        
+        _ = _sender.Send(PointerPressedMessage.ToMessage(mousePosition.x, mousePosition.y));
+    }
+
+    private (double x, double y) GetMousePosition(Point position)
+    {
         var scaleX = EmittedScreenWidth / ScreenImage.Bounds.Width;
         var scaleY = EmittedScreenHeight / ScreenImage.Bounds.Height;
         
-        _ = _sender.Send(PointerMovedMessage.ToMessage(position.X * scaleX, position.Y * scaleY));
-        
-        _pointerMovedControlTimestamp = now;
+        return (position.X * scaleX, position.Y* scaleY);
     }
 
     public void UpdateFrame(byte[] bgra, int width, int height)
