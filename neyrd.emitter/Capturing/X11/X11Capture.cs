@@ -82,42 +82,58 @@ internal sealed partial class X11Capture : ICaptureAdapter
         var root = XDefaultRootWindow(dpy);
 
         var screen = XDefaultScreen(dpy);
-        var w = XDisplayWidth(dpy, screen);
-        var h = XDisplayHeight(dpy, screen);
-        var size = w * h * 4;
+        var width = XDisplayWidth(dpy, screen);
+        var height = XDisplayHeight(dpy, screen);
+        var size = width * height * 4;
 
-        var shminfo = new XShmSegmentInfo
+        var shmInfo = new XShmSegmentInfo
         {
             shmid = shmget(IPC_PRIVATE, size, IPC_CREAT | 0x1FF)
         };
         
-        if (shminfo.shmid == -1) throw new InvalidOperationException("shmget failed");
+        if (shmInfo.shmid == -1)
+        {
+            throw new InvalidOperationException("shmget failed");
+        }
 
-        shminfo.shmaddr = shmat(shminfo.shmid, IntPtr.Zero, 0);
-        if (shminfo.shmaddr == new IntPtr(-1)) throw new InvalidOperationException("shmat failed");
+        shmInfo.shmaddr = shmat(shmInfo.shmid, IntPtr.Zero, 0);
+        if (shmInfo.shmaddr == new IntPtr(-1))
+        {
+            throw new InvalidOperationException("shmat failed");
+        }
         
         var depth = (uint)XDefaultDepth(dpy, screen);
         var image = XShmCreateImage(dpy, IntPtr.Zero, depth, ZPixmap,
-        shminfo.shmaddr, ref shminfo, (uint)w, (uint)h);  // pass shmaddr directly
+        shmInfo.shmaddr, ref shmInfo, (uint)width, (uint)height);
 
         if (image == IntPtr.Zero) throw new InvalidOperationException("XShmCreateImage failed");
 
-        shminfo.readOnly = 0;
-        XShmAttach(dpy, ref shminfo);
-        XSync(dpy, 0);
+        shmInfo.readOnly = 0;
+        XShmAttach(dpy, ref shmInfo);
+        _ = XSync(dpy, 0);
         _ = XShmGetImage(dpy, root, image, 0, 0, ~0UL);
 
         var pixels = new byte[size];
-        Marshal.Copy(shminfo.shmaddr, pixels, 0, size);
+        Marshal.Copy(shmInfo.shmaddr, pixels, 0, size);
+        
+        ReleaseResources(dpy, shmInfo, image);
 
-        // Cleanup
-        XShmDetach(dpy, ref shminfo);
+        return new FrameData(width, height, pixels);
+    }
+
+    /// <summary>
+    /// Releases the resources associated with the X11 shared memory segment, image, and display.
+    /// </summary>
+    /// <param name="dpy">The pointer to the X11 display connection.</param>
+    /// <param name="shmInfo">The X11 shared memory segment information structure.</param>
+    /// <param name="image">The pointer to the X11 image resource to be destroyed.</param>
+    private static void ReleaseResources(IntPtr dpy, XShmSegmentInfo shmInfo, IntPtr image)
+    {
+        XShmDetach(dpy, ref shmInfo);
         _ = XDestroyImage(image);
-        _ = shmdt(shminfo.shmaddr);
-        _ = shmctl(shminfo.shmid, IPC_RMID, IntPtr.Zero);
+        _ = shmdt(shmInfo.shmaddr);
+        _ = shmctl(shmInfo.shmid, IPC_RMID, IntPtr.Zero);
         _ = XCloseDisplay(dpy);
-
-        return new FrameData(w, h, pixels);
     }
 
     private static bool IsX11Available()
