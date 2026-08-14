@@ -118,6 +118,7 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
             _socket = new Socket(SocketType.Stream,
                 ProtocolType.Tcp);
             await _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
+            await Send(HandshakeMessage.ToMessage(emitterIpAddress));
         }
         catch (SocketException ex)
         {
