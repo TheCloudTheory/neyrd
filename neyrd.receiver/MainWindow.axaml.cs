@@ -48,7 +48,7 @@ public partial class MainWindow : Window
         // on the size of the window and the actual emitted resolution
         var position = e.GetPosition(ScreenImage);
         var scaleX = EmittedScreenWidth / ScreenImage.Bounds.Width;
-        var scaleY = EmittedScreenWidth / ScreenImage.Bounds.Height;
+        var scaleY = EmittedScreenHeight / ScreenImage.Bounds.Height;
         
         _ = _sender.Send(PointerMovedMessage.ToMessage(position.X * scaleX, position.Y * scaleY));
         
