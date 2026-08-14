@@ -111,14 +111,16 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
         _socket.Dispose();
     }
 
-    public async Task Reconnect()
+    public async Task Reconnect(int width, int height)
     {
         try
         {
             _socket = new Socket(SocketType.Stream,
                 ProtocolType.Tcp);
             await _socket.ConnectAsync(receiverIpAddress, NeyrdConfiguration.DefaultListeningPort);
+            
             await Send(HandshakeMessage.ToMessage(emitterIpAddress));
+            await Send(ScreenResolutionMessage.ToMessage(width, height));
         }
         catch (SocketException ex)
         {

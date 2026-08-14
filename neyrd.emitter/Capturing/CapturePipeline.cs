@@ -47,7 +47,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
                     AnsiConsole.WriteLine($"Failed to send frame. Attempting to reconnect...");
                     
                     await Task.Delay(5000);
-                    await sender.Reconnect();
+                    await sender.Reconnect(capturedFrame.Width, capturedFrame.Height);
                 }
             }
 
