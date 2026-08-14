@@ -8,6 +8,7 @@ internal sealed class PointerPressedEventHandler(IPuppeter puppeter) : INeyrdEve
 {
     public Task Handle(PointerPressedEvent @event)
     {
+        puppeter.HandleClick(@event.Payload.Item1,  @event.Payload.Item2);
         return Task.CompletedTask;
     }
 }
