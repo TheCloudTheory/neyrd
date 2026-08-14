@@ -130,6 +130,13 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                 EventPipeline.Publish<PointerMovedEvent, (double, double)>(
                     PointerMovedEvent.From(MessageEnvelope.From(message)));
             }
+
+            if (MessageTypeComparer.IsEqual(type, MessageType.Screen))
+            {
+                NeyrdLogger.Log($"Screen: {message}");
+                EventPipeline.Publish<ScreenResolutionEstablishedEvent, (int, int)>(
+                    ScreenResolutionEstablishedEvent.From(MessageEnvelope.From(message)));
+            }
         }
         catch (Exception ex)
         {

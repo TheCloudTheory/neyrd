@@ -44,8 +44,13 @@ public partial class MainWindow : Window
         const double threshold = 1000d / 30;
         if (now - _pointerMovedControlTimestamp < threshold) return;
         
-        var position = e.GetPosition(this);
-        _ = _sender.Send(PointerMovedMessage.ToMessage(position.X, position.Y));
+        // The desired position needs to be downscaled / upscaled depending
+        // on the size of the window and the actual emitted resolution
+        var position = e.GetPosition(ScreenImage);
+        var scaleX = EmittedScreenWidth / ScreenImage.Bounds.Width;
+        var scaleY = EmittedScreenWidth / ScreenImage.Bounds.Height;
+        
+        _ = _sender.Send(PointerMovedMessage.ToMessage(position.X * scaleX, position.Y * scaleY));
         
         _pointerMovedControlTimestamp = now;
     }
@@ -105,4 +110,13 @@ public partial class MainWindow : Window
     }
 
     private long Offset { get; set; }
+
+    public void SetEmittersScreenResolution(int width, int height)
+    {
+        EmittedScreenWidth = width;
+        EmittedScreenHeight = height;
+    }
+
+    public int EmittedScreenHeight { get; set; }
+    public int EmittedScreenWidth { get; set; }
 }

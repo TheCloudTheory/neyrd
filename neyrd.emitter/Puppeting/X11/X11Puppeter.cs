@@ -21,6 +21,12 @@ internal sealed class X11Puppeter : IPuppeter
     [DllImport("libX11")]
     static extern int XFlush(IntPtr display);
     
+    [DllImport("libX11")]
+    static extern int XDisplayWidth(IntPtr display, int screen);
+
+    [DllImport("libX11")]
+    static extern int XDisplayHeight(IntPtr display, int screen);
+    
     private IntPtr _display;
     private ulong _root;
 
@@ -38,6 +44,14 @@ internal sealed class X11Puppeter : IPuppeter
     {
         _ = XWarpPointer(_display, 0, _root, 0, 0, 0, 0, (int)x, (int)y);
         _ = XFlush(_display);
+    }
+
+    public (int width, int height) GetScreenSize()
+    {
+        var width = XDisplayWidth(_display, 0);
+        var height = XDisplayHeight(_display, 0);
+        
+        return (width, height);
     }
 
     private bool IsX11Supported()

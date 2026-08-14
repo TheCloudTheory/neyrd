@@ -4,6 +4,7 @@ using neyrd.core.Benchmark;
 using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Environment;
 using neyrd.core.Events;
+using neyrd.core.Models.Messages;
 using neyrd.emitter.Capturing;
 using neyrd.emitter.Capturing.CoreGraphics;
 using neyrd.emitter.Capturing.ScreenCaptureKit;
@@ -166,9 +167,10 @@ else
     AnsiConsole.Write(TestSuite.DisplayResults());
 }
 
-AnsiConsole.WriteLine();
-AnsiConsole.WriteLine("Synchronizing emitter and receiver...");
-
+AnsiConsole.WriteLine("Checking resolution...");
+var resolution = puppeter.GetScreenSize();
+AnsiConsole.WriteLine($"Width: {resolution.width}, Height: {resolution.height}");
+await sender.Send(ScreenResolutionMessage.ToMessage(resolution.width, resolution.height));
 
 AnsiConsole.WriteLine();
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");

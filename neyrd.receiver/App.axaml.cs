@@ -51,6 +51,7 @@ public class App : Application
         EventPipeline.Subscribe(new TestCompletedHandler());
         EventPipeline.Subscribe(new FrameReceivedEventHandler(window));
         EventPipeline.Subscribe(new SynchronizationRequestedEventHandler(window));
+        EventPipeline.Subscribe(new ScreenResolutionEstablishedEventHandler(window));
     }
 
     private void InitializeReceiver()
