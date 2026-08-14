@@ -3,32 +3,32 @@ using neyrd.core;
 
 namespace neyrd.emitter.Puppeting.X11;
 
-internal sealed class X11Puppeter : IPuppeter
+internal sealed partial class X11Puppeter : IPuppeter
 {
-    [DllImport("libX11")]
-    static extern int XWarpPointer(IntPtr display, ulong srcW, ulong destW,
+    [LibraryImport("libX11")]
+    private static partial int XWarpPointer(IntPtr display, ulong srcW, ulong destW,
         int srcX, int srcY, uint srcWidth, uint srcHeight, int destX, int destY);
 
-    [DllImport("libX11")]
-    static extern IntPtr XOpenDisplay(string? display);
+    [LibraryImport("libX11")]
+    private static partial IntPtr XOpenDisplay([MarshalAs(UnmanagedType.LPStr)] string? display);
     
-    [DllImport("libX11")]
-    static extern IntPtr XCloseDisplay(IntPtr display);
+    [LibraryImport("libX11")]
+    private static partial IntPtr XCloseDisplay(IntPtr display);
     
-    [DllImport("libX11")]
-    static extern ulong XDefaultRootWindow(IntPtr display);
+    [LibraryImport("libX11")]
+    private static partial ulong XDefaultRootWindow(IntPtr display);
 
-    [DllImport("libX11")]
-    static extern int XFlush(IntPtr display);
+    [LibraryImport("libX11")]
+    private static partial int XFlush(IntPtr display);
     
-    [DllImport("libX11")]
-    static extern int XDisplayWidth(IntPtr display, int screen);
+    [LibraryImport("libX11")]
+    private static partial int XDisplayWidth(IntPtr display, int screen);
 
-    [DllImport("libX11")]
-    static extern int XDisplayHeight(IntPtr display, int screen);
+    [LibraryImport("libX11")]
+    private static partial int XDisplayHeight(IntPtr display, int screen);
     
-    [DllImport("libXtst.so.6")]
-    static extern int XTestFakeButtonEvent(IntPtr display, uint button, bool isPress, ulong delay);
+    [LibraryImport("libXtst.so.6")]
+    private static partial int XTestFakeButtonEvent(IntPtr display, uint button, [MarshalAs(UnmanagedType.Bool)] bool isPress, ulong delay);
     
     private IntPtr _display;
     private ulong _root;
