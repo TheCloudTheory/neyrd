@@ -46,3 +46,21 @@ The connection is bi-directional, enabling input events (pointer, keyboard) to b
 ## What neyrd is not
 
 Not an RDP client. No RDP protocol involved — neyrd uses its own framing over a plain TCP socket.
+
+## Comparison with existing tools
+
+| Tool | Protocol | Latency | Open source | Self-hosted |
+|---|---|---|---|---|
+| **neyrd** | Raw TCP (custom framing) | ~20–50ms | Yes | Yes |
+| RDP | Microsoft RDP | 50–150ms | No | Yes |
+| TeamViewer | Proprietary (relay-based) | 100–300ms+ | No | No |
+| VNC | RFB | 50–200ms | Yes | Yes |
+| Parsec | Proprietary | ~15–30ms | No | No |
+| Sunshine/Moonlight | RTSP/custom | ~15–40ms | Yes | Yes |
+
+**Key differences:**
+
+- **RDP / VNC** — general-purpose remote desktop protocols with broad feature sets (clipboard, audio, file transfer). neyrd is video-only with minimal overhead.
+- **TeamViewer** — traffic is routed through TeamViewer relay servers. neyrd is direct TCP with no third-party involvement.
+- **Parsec** — closest in goals (low-latency streaming), but closed-source and requires account registration.
+- **Sunshine/Moonlight** — game-streaming focused, uses GPU encoding. neyrd targets CPU-only environments and simpler deployments.
