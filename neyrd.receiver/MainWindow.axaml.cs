@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using neyrd.core;
+using neyrd.core.Environment;
 
 namespace neyrd.receiver;
 
@@ -15,6 +16,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        
+        var ips = NetworkInfoCollector.NetworkInterfaces;
+        StatusBar.Text = ips.Length > 0
+            ? $"IP: {string.Join(", ", ips)}"
+            : "IP: unavailable";
     }
 
     public void UpdateFrame(byte[] bgra, int width, int height)
@@ -27,6 +33,8 @@ public partial class MainWindow : Window
         
         Dispatcher.UIThread.Post(() =>
         {
+            Placeholder.IsVisible = false;
+            
             // scaling > 1 on HiDPI/Retina; bitmap must reflect physical pixel density
             var scaling = RenderScaling;
             var dpi = 96 * scaling;

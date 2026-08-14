@@ -50,6 +50,6 @@ public static class TestSuite
             .ToString("F3", CultureInfo.InvariantCulture);
 
         return
-            $"Duration: {durationMs.ToString("F3", CultureInfo.InvariantCulture)}ms{Environment.NewLine}Hits: [{string.Join(", ", offsets.Select(o => $"{o.ToString("F3", CultureInfo.InvariantCulture)}ms"))}]{Environment.NewLine}Average: {average}ms";
+            $"Duration: {durationMs.ToString("F3", CultureInfo.InvariantCulture)}ms{System.Environment.NewLine}Hits: [{string.Join(", ", offsets.Select(o => $"{o.ToString("F3", CultureInfo.InvariantCulture)}ms"))}]{System.Environment.NewLine}Average: {average}ms";
     }
 }

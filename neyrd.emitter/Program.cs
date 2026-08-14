@@ -2,6 +2,7 @@
 using neyrd.core;
 using neyrd.core.Benchmark;
 using neyrd.core.Benchmark.Handlers;
+using neyrd.core.Environment;
 using neyrd.core.Events;
 using neyrd.emitter.Capturing;
 using neyrd.emitter.Capturing.CoreGraphics;
@@ -41,7 +42,7 @@ var table = new Table()
 
 table.AddRow("[blue]OS[/]", $"{env.OsName} {env.OsVersion}");
 table.AddRow("[blue]CPU Cores[/]", env.Cpu);
-table.AddRow("[blue]Network[/]", string.Join(", ", net.NetworkInterfaces));
+table.AddRow("[blue]Network[/]", string.Join(", ", NetworkInfoCollector.NetworkInterfaces));
 table.AddRow("[blue]Threads[/]", dotnet.AvailableThreads.ToString());
 table.AddRow("[blue]GC Mode[/]", dotnet.GarbageCollectorMode);
 
@@ -89,12 +90,12 @@ EventPipeline.Subscribe(new TestCompletedHandler());
 AnsiConsole.WriteLine("Initializing listener...");
 
 var cts = new CancellationTokenSource();
-var listener = new NeyrdListener(IPAddress.Parse(net.NetworkInterfaces.First()));
+var listener = new NeyrdListener(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()));
 _ = listener.BeginListeningAsync(cts.Token);
 
 AnsiConsole.WriteLine("Connecting with receiver...");
 
-var sender = new NeyrdSender(IPAddress.Parse(net.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
+var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
 var test = await sender.TestConnectionAsync();
 
 if(test.IsSuccessful)

@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace neyrd.emitter.Environment;
+namespace neyrd.core.Environment;
 
-internal sealed class NetworkInfoCollector
+public sealed class NetworkInfoCollector
 {
-    internal string[] NetworkInterfaces => GetLocalIpAddresses();
+    public static string[] NetworkInterfaces => GetLocalIpAddresses();
 
     public override string ToString()
     {
