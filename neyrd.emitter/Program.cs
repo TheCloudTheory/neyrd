@@ -125,6 +125,7 @@ EventPipeline.Subscribe(new TestReceivedHandler());
 EventPipeline.Subscribe(new TestCompletedHandler());
 EventPipeline.Subscribe(new AcknowledgementReceivedEventHandler(sender));
 EventPipeline.Subscribe(new PointerMovedEventHandler(puppeter));
+EventPipeline.Subscribe(new PointerPressedEventHandler(puppeter));
 
 AnsiConsole.WriteLine("Initializing listener...");
 
