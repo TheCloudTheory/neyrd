@@ -7,7 +7,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
 {
     [LibraryImport("libX11.so.6", StringMarshalling = StringMarshalling.Utf8)]
     private static partial IntPtr XOpenDisplay(string? display);
-    
+
     [LibraryImport("libX11.so.6")]
     private static partial int XCloseDisplay(IntPtr display);
 
@@ -40,10 +40,10 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
     [LibraryImport("libc.so.6")]
     private static partial int shmctl(int shmid, int cmd, IntPtr buf);
-    
+
     [LibraryImport("libX11.so.6")]
     private static partial IntPtr XDefaultRootWindow(IntPtr display);
-    
+
     [LibraryImport("libX11.so.6")]
     private static partial int XDisplayWidth(IntPtr display, int screen);
 
@@ -52,33 +52,33 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
     [LibraryImport("libX11.so.6")]
     private static partial int XDefaultScreen(IntPtr display);
-    
+
     [LibraryImport("libX11.so.6")]
     private static partial int XDefaultDepth(IntPtr display, int screen);
-    
+
     [LibraryImport("libX11.so.6")]
     private static partial int XSync(IntPtr display, int discard);
-    
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct XShmSegmentInfo
     {
-        public ulong shmseg;   // ShmSeg (X resource ID)
-        public int   shmid;
+        public ulong shmseg; // ShmSeg (X resource ID)
+        public int shmid;
         public IntPtr shmaddr;
-        public int   readOnly;
+        public int readOnly;
     }
 
     private const int IPC_PRIVATE = 0;
-    private const int IPC_RMID    = 0;
-    private const int IPC_CREAT   = 0x200;
-    private const int ZPixmap     = 2;
+    private const int IPC_RMID = 0;
+    private const int IPC_CREAT = 0x200;
+    private const int ZPixmap = 2;
 
     public string Name => "X11";
     public bool IsSupported => IsX11Available();
-    
+
     public FrameData CaptureFrame()
     {
-        var dpy  = XOpenDisplay(null);
+        var dpy = XOpenDisplay(null);
         var root = XDefaultRootWindow(dpy);
 
         var screen = XDefaultScreen(dpy);
@@ -90,7 +90,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
         {
             shmid = shmget(IPC_PRIVATE, size, IPC_CREAT | 0x1FF)
         };
-        
+
         if (shmInfo.shmid == -1)
         {
             throw new InvalidOperationException("shmget failed");
@@ -101,10 +101,10 @@ internal sealed partial class X11Capture : ICaptureAdapter
         {
             throw new InvalidOperationException("shmat failed");
         }
-        
+
         var depth = (uint)XDefaultDepth(dpy, screen);
         var image = XShmCreateImage(dpy, IntPtr.Zero, depth, ZPixmap,
-        shmInfo.shmaddr, ref shmInfo, (uint)width, (uint)height);
+            shmInfo.shmaddr, ref shmInfo, (uint)width, (uint)height);
 
         if (image == IntPtr.Zero) throw new InvalidOperationException("XShmCreateImage failed");
 
@@ -115,7 +115,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
         var pixels = new byte[size];
         Marshal.Copy(shmInfo.shmaddr, pixels, 0, size);
-        
+
         ReleaseResources(dpy, shmInfo, image);
 
         return new FrameData(width, height, pixels);

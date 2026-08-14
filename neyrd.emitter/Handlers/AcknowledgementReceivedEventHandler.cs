@@ -5,7 +5,7 @@ using neyrd.emitter.Networking;
 
 namespace neyrd.emitter.Handlers;
 
-internal sealed class AcknowledgementReceivedHandler(NeyrdSender sender) : INeyrdEventHandler<AcknowledgementReceivedEvent, long>
+internal sealed class AcknowledgementReceivedEventHandler(NeyrdSender sender) : INeyrdEventHandler<AcknowledgementReceivedEvent, long>
 {
     public Task Handle(AcknowledgementReceivedEvent @event)
     {

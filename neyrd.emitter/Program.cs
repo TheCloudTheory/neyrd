@@ -11,6 +11,8 @@ using neyrd.emitter.Capturing.X11;
 using neyrd.emitter.Environment;
 using neyrd.emitter.Handlers;
 using neyrd.emitter.Networking;
+using neyrd.emitter.Puppeting;
+using neyrd.emitter.Puppeting.X11;
 using Spectre.Console;
 
 var adapterOption = args.SkipWhile(a => a != "--adapter").Skip(1).FirstOrDefault();
@@ -82,6 +84,33 @@ if(!atLeastOneAdapterSupported)
     return;
 }
 
+var puppeters = new IPuppeter[]
+{
+    new X11Puppeter()
+};
+
+foreach(var adapter in puppeters)
+{
+    if(!adapter.IsSupported)
+    {
+        AnsiConsole.Markup($"[yellow]Puppeter {adapter.Name} is not supported.[/]");
+        AnsiConsole.WriteLine();
+    }
+    else
+    {
+        AnsiConsole.Markup($"[green]Puppeter {adapter.Name} is supported.[/]");
+        AnsiConsole.WriteLine();
+        
+        atLeastOneAdapterSupported = true;
+    }
+}
+
+if(!atLeastOneAdapterSupported)
+{
+    AnsiConsole.Markup("[red]No supported puppeters found.[/]");
+    return;
+}
+
 AnsiConsole.WriteLine("Registering handlers...");
 
 var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), IPAddress.Parse(receiverIpAddressOption));
@@ -89,7 +118,8 @@ var sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfa
 EventPipeline.Subscribe(new TestStartedEventHandler());
 EventPipeline.Subscribe(new TestReceivedHandler());
 EventPipeline.Subscribe(new TestCompletedHandler());
-EventPipeline.Subscribe(new AcknowledgementReceivedHandler(sender));
+EventPipeline.Subscribe(new AcknowledgementReceivedEventHandler(sender));
+EventPipeline.Subscribe(new PointerMovedEventHandler(puppeters.First(puppeter => puppeter.IsSupported && puppeter.Name == adapterOption)));
 
 AnsiConsole.WriteLine("Initializing listener...");
 
