@@ -74,7 +74,14 @@ internal sealed class NeyrdSender(IPAddress emitterIpAddress, IPAddress receiver
 
     public async Task Send(IMessage message)
     {
-        _ = await _socket.SendAsync(message.Payload);
+        try
+        {
+            _ = await _socket.SendAsync(message.Payload);
+        }
+        catch (SocketException ex)
+        {
+            NeyrdLogger.Log($"Failed to  send message: {ex.Message}. Error code: {ex.SocketErrorCode}");
+        }
     }
 
     internal sealed class ConnectionTestResult
