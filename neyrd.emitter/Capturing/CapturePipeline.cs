@@ -41,13 +41,13 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
             if (EncodedFrames.TryDequeue(out var frame))
             {
                 var success = await sender.Send(FrameMessage.ToMessage(frame.OriginalSize, frame.EncodedLength,
-                    frame.Data, capturedFrame.Width, capturedFrame.Height));
+                    frame.Data, (int)capturedFrame.Width, (int)capturedFrame.Height));
                 if (!success)
                 {
                     AnsiConsole.WriteLine($"Failed to send frame. Attempting to reconnect...");
                     
                     await Task.Delay(5000);
-                    await sender.Reconnect(capturedFrame.Width, capturedFrame.Height);
+                    await sender.Reconnect((int)capturedFrame.Width, (int)capturedFrame.Height);
                 }
             }
 
