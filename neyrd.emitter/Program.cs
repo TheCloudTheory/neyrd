@@ -176,9 +176,13 @@ AnsiConsole.WriteLine($"Width: {resolution.width}, Height: {resolution.height}")
 await sender.Send(ScreenResolutionMessage.ToMessage(resolution.width, resolution.height));
 
 AnsiConsole.WriteLine();
+AnsiConsole.WriteLine("Initializing adapter...");
+var captureAdapter = adapters.First(adapter => adapter.IsSupported && adapter.Name == adapterOption);
+captureAdapter.Initialize();
+
 AnsiConsole.WriteLine("Capturing. You can minimize the window.");
 
-var capture = new CapturePipeline(adapters.First(adapter => adapter.IsSupported && adapter.Name == adapterOption), sender, cts.Token);
+var capture = new CapturePipeline(captureAdapter, sender, cts.Token);
 await capture.Begin();
 
 Console.ReadKey();
