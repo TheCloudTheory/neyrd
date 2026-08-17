@@ -35,8 +35,20 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            var capturedFrame = adapter.CaptureFrame();
-            Frames.Enqueue(capturedFrame);
+            FrameData capturedFrame;
+            
+            try
+            {
+                capturedFrame = adapter.CaptureFrame();
+                Frames.Enqueue(capturedFrame);
+            }
+            catch (Exception ex)
+            {
+                NeyrdLogger.Log($"Error while capturing a frame: {ex.Message}");
+                AnsiConsole.WriteLine("Error while capturing a frame. Check logs for details.");
+                
+                return;
+            }
 
             if (EncodedFrames.TryDequeue(out var frame))
             {
