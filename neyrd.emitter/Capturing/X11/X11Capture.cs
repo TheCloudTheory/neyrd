@@ -17,6 +17,14 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
     public FrameData CaptureFrame()
     {
+        if (_display == IntPtr.Zero)
+        {
+            NeyrdLogger.Log("Detected invalid state of X11 capture adapter. Trying to re-initialize.");
+            Initialize();
+
+            return new FrameData(0, 0, []);
+        }
+        
         var root = XDefaultRootWindow(_display);
         
         var shmInfo = new XShmSegmentInfo
