@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using neyrd.core.Events;
 using neyrd.core.Messages;
+using neyrd.core.Models;
 using neyrd.core.Models.Events;
 
 namespace neyrd.core;
@@ -141,7 +142,7 @@ public sealed class NeyrdListener(IPAddress ipAddress)
             if (MessageTypeComparer.IsEqual(type, MessageType.PointerPressed))
             {
                 NeyrdLogger.Log($"Pointer pressed: {message}");
-                EventPipeline.Publish<PointerPressedEvent, (double, double)>(
+                EventPipeline.Publish<PointerPressedEvent, (double, double, MouseButton)>(
                     PointerPressedEvent.From(MessageEnvelope.From(message)));
             }
             

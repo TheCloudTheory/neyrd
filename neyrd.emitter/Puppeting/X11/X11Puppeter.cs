@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using neyrd.core;
+using neyrd.core.Models;
 
 namespace neyrd.emitter.Puppeting.X11;
 
@@ -49,7 +50,7 @@ internal sealed partial class X11Puppeter : IPuppeter
         _ = XFlush(_display);
     }
 
-    public void HandleClick(double x, double y)
+    public void HandleClick(double x, double y, MouseButton button)
     {
         MovePointer(x, y);
         
@@ -57,9 +58,8 @@ internal sealed partial class X11Puppeter : IPuppeter
         {
             NeyrdLogger.Log($"Display: {_display != IntPtr.Zero}");
             
-            // Note 1 - left button, 2 - middle, 3 - right
-            _ = XTestFakeButtonEvent(_display, 1, true, 0);
-            _ = XTestFakeButtonEvent(_display, 1, false, 0);
+            _ = XTestFakeButtonEvent(_display, (uint)button, true, 0);
+            _ = XTestFakeButtonEvent(_display, (uint)button, false, 0);
             _ = XFlush(_display);
         }
         catch (DllNotFoundException ex)

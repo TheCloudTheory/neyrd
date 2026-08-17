@@ -9,6 +9,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using neyrd.core;
 using neyrd.core.Environment;
+using neyrd.core.Models;
 using neyrd.core.Models.Messages;
 using neyrd.receiver.Networking;
 
@@ -60,8 +61,10 @@ public partial class MainWindow : Window
     {
         var position = e.GetPosition(ScreenImage);
         var mousePosition = GetMousePosition(position);
+        var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
+            e.Properties.IsMiddleButtonPressed, e.Properties.IsRightButtonPressed);
         
-        _ = _sender.Send(PointerPressedMessage.ToMessage(mousePosition.x, mousePosition.y));
+        _ = _sender.Send(PointerPressedMessage.ToMessage(mousePosition.x, mousePosition.y, button));
     }
 
     private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -74,7 +77,7 @@ public partial class MainWindow : Window
         var scaleX = EmittedScreenWidth / ScreenImage.Bounds.Width;
         var scaleY = EmittedScreenHeight / ScreenImage.Bounds.Height;
         
-        return (position.X * scaleX, position.Y* scaleY);
+        return (position.X * scaleX, position.Y * scaleY);
     }
 
     public void UpdateFrame(byte[] bgra, int width, int height)
