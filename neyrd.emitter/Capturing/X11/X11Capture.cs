@@ -96,8 +96,6 @@ internal sealed partial class X11Capture : ICaptureAdapter
         {
             _ = shmctl(shmInfo.shmid, IPC_RMID, IntPtr.Zero);
         }
-        
-        _ = XCloseDisplay(dpy);
     }
 
     private static bool IsX11Available()
@@ -114,5 +112,10 @@ internal sealed partial class X11Capture : ICaptureAdapter
             NeyrdLogger.Log($"Error loading libX11: {ex.Message}");
             return false;
         }
+    }
+
+    public void Dispose()
+    {
+        _ = XCloseDisplay(_display);
     }
 }

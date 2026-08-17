@@ -77,4 +77,8 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
             return false;
         }
     }
+
+    public void Dispose()
+    {
+    }
 }

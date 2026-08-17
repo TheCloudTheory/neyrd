@@ -49,4 +49,8 @@ internal sealed partial class ScreenCaptureKitCapture : ICaptureAdapter
             _latest = new FrameData((uint)width, (uint)height, bytes);
         }
     }
+
+    public void Dispose()
+    {
+    }
 }

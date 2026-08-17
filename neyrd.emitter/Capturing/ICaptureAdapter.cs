@@ -1,6 +1,6 @@
 namespace neyrd.emitter.Capturing;
 
-internal interface ICaptureAdapter
+internal interface ICaptureAdapter : IDisposable
 {
     string Name { get; }
     bool IsSupported { get; }
