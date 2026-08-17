@@ -40,8 +40,8 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
         var display = CGMainDisplayID();
         var image = CGDisplayCreateImage(display);
         
-        var width = (int)CGImageGetWidth(image);
-        var height = (int)CGImageGetHeight(image);
+        var width = (uint)CGImageGetWidth(image);
+        var height = (uint)CGImageGetHeight(image);
 
         var provider = CGImageGetDataProvider(image);
         var cfData = CGDataProviderCopyData(provider);
@@ -57,6 +57,11 @@ internal sealed partial class CoreGraphicsCapture : ICaptureAdapter
         CFRelease(image);
 
         return new FrameData(width, height, bytes);
+    }
+
+    public void Initialize()
+    {
+        throw new NotImplementedException();
     }
 
     private bool IsCoreGraphicsAvailable()

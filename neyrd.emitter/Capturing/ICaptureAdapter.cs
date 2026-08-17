@@ -36,4 +36,6 @@ internal interface ICaptureAdapter
     void StopStream()
     {
     }
+
+    void Initialize();
 }

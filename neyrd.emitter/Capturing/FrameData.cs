@@ -1,3 +1,3 @@
 namespace neyrd.emitter.Capturing;
 
-internal readonly record struct FrameData(int Width, int Height, byte[] Data);
+internal readonly record struct FrameData(uint Width, uint Height, byte[] Data);

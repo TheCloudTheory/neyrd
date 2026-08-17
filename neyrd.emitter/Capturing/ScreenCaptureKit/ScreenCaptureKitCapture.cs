@@ -32,7 +32,11 @@ internal sealed partial class ScreenCaptureKitCapture : ICaptureAdapter
     }
 
     public void StopStream() => neyrd_stop_capture();
-    
+    public void Initialize()
+    {
+        throw new NotImplementedException();
+    }
+
     public FrameData CaptureFrame() { lock (_lock) return _latest; }
 
     private void OnFrame(IntPtr data, int width, int height)
@@ -42,7 +46,7 @@ internal sealed partial class ScreenCaptureKitCapture : ICaptureAdapter
         
         lock (_lock)
         {
-            _latest = new FrameData(width, height, bytes);
+            _latest = new FrameData((uint)width, (uint)height, bytes);
         }
     }
 }
