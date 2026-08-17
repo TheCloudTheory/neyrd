@@ -8,6 +8,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
     public string Name => "X11";
     public bool IsSupported => IsX11Available();
 
+    private IntPtr _display;
     private int _screen;
     private uint _size;
     private byte[]? _pixels;
@@ -16,8 +17,7 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
     public FrameData CaptureFrame()
     {
-        var dpy = XOpenDisplay(null);
-        var root = XDefaultRootWindow(dpy);
+        var root = XDefaultRootWindow(_display);
         
         var shmInfo = new XShmSegmentInfo
         {
@@ -26,43 +26,44 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
         if (shmInfo.shmid == -1)
         {
-            ReleaseResources(dpy, shmInfo, null);
+            ReleaseResources(_display, shmInfo, null);
             throw new InvalidOperationException("shmget failed");
         }
 
         shmInfo.shmaddr = shmat(shmInfo.shmid, IntPtr.Zero, 0);
         if (shmInfo.shmaddr == new IntPtr(-1))
         {
-            ReleaseResources(dpy, shmInfo, null);
+            ReleaseResources(_display, shmInfo, null);
             throw new InvalidOperationException("shmat failed");
         }
 
-        var depth = (uint)XDefaultDepth(dpy, _screen);
-        var image = XShmCreateImage(dpy, IntPtr.Zero, depth, ZPixmap,
+        var depth = (uint)XDefaultDepth(_display, _screen);
+        var image = XShmCreateImage(_display, IntPtr.Zero, depth, ZPixmap,
             shmInfo.shmaddr, ref shmInfo, (uint)_width, (uint)_height);
 
         if (image == IntPtr.Zero)
         {
-            ReleaseResources(dpy, shmInfo, image);
+            ReleaseResources(_display, shmInfo, image);
             throw new InvalidOperationException("XShmCreateImage failed");
         }
 
         shmInfo.readOnly = 0;
-        XShmAttach(dpy, ref shmInfo);
-        _ = XSync(dpy, 0);
-        _ = XShmGetImage(dpy, root, image, 0, 0, ~0UL);
+        XShmAttach(_display, ref shmInfo);
+        _ = XSync(_display, 0);
+        _ = XShmGetImage(_display, root, image, 0, 0, ~0UL);
         
         Marshal.Copy(shmInfo.shmaddr, _pixels!, 0, (int)_size);
 
-        ReleaseResources(dpy, shmInfo, image);
+        ReleaseResources(_display, shmInfo, image);
 
         return new FrameData(_width, _height, _pixels!);
     }
 
     public void Initialize()
     {
-        var dpy = XOpenDisplay(null);
+        var dpy = 
         
+        _display = XOpenDisplay(null);
         _screen = XDefaultScreen(dpy);
         _width = (uint)XDisplayWidth(dpy, _screen);
         _height = (uint)XDisplayHeight(dpy, _screen);
