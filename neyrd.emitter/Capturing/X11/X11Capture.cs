@@ -61,16 +61,12 @@ internal sealed partial class X11Capture : ICaptureAdapter
 
     public void Initialize()
     {
-        var dpy = 
-        
         _display = XOpenDisplay(null);
-        _screen = XDefaultScreen(dpy);
-        _width = (uint)XDisplayWidth(dpy, _screen);
-        _height = (uint)XDisplayHeight(dpy, _screen);
+        _screen = XDefaultScreen(_display);
+        _width = (uint)XDisplayWidth(_display, _screen);
+        _height = (uint)XDisplayHeight(_display, _screen);
         _size = _width * _height * 4;
         _pixels = new byte[_size];
-        
-        _ = XCloseDisplay(dpy);
     }
 
     /// <summary>
