@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using neyrd.core;
 using neyrd.core.Models.Messages;
 using neyrd.emitter.Encoding;
@@ -8,7 +9,11 @@ namespace neyrd.emitter.Capturing;
 
 internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sender, CancellationToken cancellationToken)
 {
-    private static readonly Queue<FrameData> Frames = new();
+    private static readonly Channel<FrameData> Frames = Channel.CreateBounded<FrameData>(new BoundedChannelOptions(2)
+    {
+        FullMode = BoundedChannelFullMode.DropOldest
+    });
+    
     private static readonly Queue<EncodedFrame> EncodedFrames = new();
     
     private Thread? _encodingThread;
@@ -40,7 +45,7 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
             try
             {
                 capturedFrame = adapter.CaptureFrame();
-                Frames.Enqueue(capturedFrame);
+                await Frames.Writer.WriteAsync(capturedFrame);
             }
             catch (Exception ex)
             {
@@ -71,11 +76,12 @@ internal sealed class CapturePipeline(ICaptureAdapter adapter, NeyrdSender sende
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            if(Frames.Count == 0) continue;
-
-            var frame = Frames.Dequeue();
+            if (!Frames.Reader.TryRead(out var frame))
+            {
+                continue;    
+            }
+            
             var encoded = EncodingStrategySelector.GetEncoder().Encode(frame.Data);
-        
             EncodedFrames.Enqueue(encoded);
         }
         
