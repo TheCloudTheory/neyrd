@@ -59,7 +59,9 @@ internal sealed partial class X11Puppeter : IPuppeter
             NeyrdLogger.Log($"Display: {_display != IntPtr.Zero}");
             
             _ = XTestFakeButtonEvent(_display, (uint)button, true, 0);
-            _ = XTestFakeButtonEvent(_display, (uint)button, false, 50);
+            _ = XFlush(_display);
+            Thread.Sleep(50);
+            _ = XTestFakeButtonEvent(_display, (uint)button, false, 0);
             _ = XFlush(_display);
         }
         catch (DllNotFoundException ex)
