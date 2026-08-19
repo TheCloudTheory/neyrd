@@ -78,7 +78,10 @@ public partial class MainWindow : Window
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        _ = _sender.Send(KeyDownMessage.ToMessage(e.KeySymbol!, (int)e.KeyModifiers));
+        if (e.Handled) return;
+        e.Handled = true;
+        
+        _ = _sender.Send(KeyDownMessage.ToMessage(e.Key.ToString(), (int)e.KeyModifiers));
     }
 
     private (double x, double y) GetMousePosition(Point position)
