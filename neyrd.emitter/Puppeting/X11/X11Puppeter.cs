@@ -128,6 +128,7 @@ internal sealed partial class X11Puppeter : IPuppeter
         var activeModifiers = Enum.GetValues<KeyModifier>()
             .Where(m => m != KeyModifier.None && modifier.HasFlag(m))
             .Select(m => XKeysymToKeycode(_display, XStringToKeysym(ModifierToX11String(m))))
+            .Where(kc => kc != 0)
             .ToList();
 
         foreach (var modKeycode in activeModifiers)
