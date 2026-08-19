@@ -58,6 +58,13 @@ internal sealed partial class X11Puppeter : IPuppeter
         ["Multiply"] = "KP_Multiply", ["Add"] = "KP_Add",
         ["Subtract"] = "KP_Subtract", ["Divide"] = "KP_Divide",
         ["Decimal"] = "KP_Decimal",
+        ["Oem3"]       = "grave",
+        ["LeftAlt"]    = "Alt_L",
+        ["RightAlt"]   = "Alt_R",
+        ["LeftCtrl"]   = "Control_L",
+        ["RightCtrl"]  = "Control_R",
+        ["LWin"]       = "Super_L",
+        ["RWin"]       = "Super_R",
     };
 
     public string Name => "X11";
