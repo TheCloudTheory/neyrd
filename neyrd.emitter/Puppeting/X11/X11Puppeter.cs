@@ -136,8 +136,15 @@ internal sealed partial class X11Puppeter : IPuppeter
             _ = XTestFakeKeyEvent(_display, modKeycode, true, 0);
         }
 
-        _ = XTestFakeKeyEvent(_display, keycode, true, 0);
-        _ = XTestFakeKeyEvent(_display, keycode, false, 0);
+        if (keycode != 0)
+        {
+            _ = XTestFakeKeyEvent(_display, keycode, true, 0);
+            _ = XTestFakeKeyEvent(_display, keycode, false, 0);
+        }
+        else
+        {
+            NeyrdLogger.Log($"No X11 keycode for key: {key}");
+        }
 
         foreach (var modKeycode in activeModifiers)
         {
