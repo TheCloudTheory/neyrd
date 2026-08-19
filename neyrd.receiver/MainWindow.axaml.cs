@@ -59,6 +59,9 @@ public partial class MainWindow : Window
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (e.Handled) return;
+        e.Handled = true;
+
         var position = e.GetPosition(ScreenImage);
         var mousePosition = GetMousePosition(position);
         var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
