@@ -7,7 +7,8 @@
         Title="neyrd.receiver"
         PointerMoved="OnPointerMoved"
         PointerPressed="OnPointerPressed"
-        PointerWheelChanged="OnPointerWheelChanged">
+        PointerWheelChanged="OnPointerWheelChanged"
+        KeyDown="OnKeyDown">
 
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Background="#1e1e1e" Padding="8,4">

@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         PointerMoved += OnPointerMoved;
         PointerPressed += OnPointerPressed;
         PointerWheelChanged += OnPointerWheelChanged;
+        KeyDown += OnKeyDown;
     }
     
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -73,6 +74,11 @@ public partial class MainWindow : Window
     private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         _ = _sender.Send(PointerWheelChangedMessage.ToMessage(e.Delta.Length, e.Delta.X, e.Delta.Y));
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        _ = _sender.Send(KeyDownMessage.ToMessage(e.KeySymbol!, (int)e.KeyModifiers));
     }
 
     private (double x, double y) GetMousePosition(Point position)

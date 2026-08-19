@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using neyrd.core;
 using neyrd.core.Models;
 
@@ -6,31 +5,6 @@ namespace neyrd.emitter.Puppeting.X11;
 
 internal sealed partial class X11Puppeter : IPuppeter
 {
-    [LibraryImport("libX11")]
-    private static partial int XWarpPointer(IntPtr display, ulong srcW, ulong destW,
-        int srcX, int srcY, uint srcWidth, uint srcHeight, int destX, int destY);
-
-    [LibraryImport("libX11")]
-    private static partial IntPtr XOpenDisplay([MarshalAs(UnmanagedType.LPStr)] string? display);
-    
-    [LibraryImport("libX11")]
-    private static partial IntPtr XCloseDisplay(IntPtr display);
-    
-    [LibraryImport("libX11")]
-    private static partial ulong XDefaultRootWindow(IntPtr display);
-
-    [LibraryImport("libX11")]
-    private static partial int XFlush(IntPtr display);
-    
-    [LibraryImport("libX11")]
-    private static partial int XDisplayWidth(IntPtr display, int screen);
-
-    [LibraryImport("libX11")]
-    private static partial int XDisplayHeight(IntPtr display, int screen);
-    
-    [LibraryImport("libXtst.so.6")]
-    private static partial int XTestFakeButtonEvent(IntPtr display, uint button, [MarshalAs(UnmanagedType.Bool)] bool isPress, ulong delay);
-    
     private IntPtr _display;
     private ulong _root;
 
@@ -80,6 +54,42 @@ internal sealed partial class X11Puppeter : IPuppeter
         _ = XTestFakeButtonEvent(_display, button, false, 0);
         _ = XFlush(_display);
     }
+
+    public void HandleKeyDown(string key, KeyModifier modifier)
+    {
+        var keysym = XStringToKeysym(key);
+        var keycode = XKeysymToKeycode(_display, keysym);
+
+        var activeModifiers = Enum.GetValues<KeyModifier>()
+            .Where(m => m != KeyModifier.None && modifier.HasFlag(m))
+            .Select(m => XKeysymToKeycode(_display, XStringToKeysym(ModifierToX11String(m))))
+            .ToList();
+
+        foreach (var modKeycode in activeModifiers)
+        {
+            _ = XTestFakeKeyEvent(_display, modKeycode, true, 0);
+        }
+        
+        _ = XTestFakeKeyEvent(_display, keycode, true, 0);
+        _ = XTestFakeKeyEvent(_display, keycode, false, 0);
+
+        foreach (var modKeycode in activeModifiers)
+        {
+            _ = XTestFakeKeyEvent(_display, modKeycode, false, 0);
+        }
+
+        _ = XFlush(_display);
+    }
+
+    private static string ModifierToX11String(KeyModifier modifier) => modifier switch
+    {
+        KeyModifier.Alt => "Alt_L",
+        KeyModifier.Control => "Control_L",
+        KeyModifier.Shift => "Shift_L",
+        KeyModifier.Meta => "Super_L",
+        KeyModifier.None => "",
+        _ => throw new ArgumentOutOfRangeException(nameof(modifier))
+    };
 
     public (int width, int height) GetScreenSize()
     {
