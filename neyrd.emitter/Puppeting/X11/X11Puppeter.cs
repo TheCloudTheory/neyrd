@@ -37,7 +37,27 @@ internal sealed partial class X11Puppeter : IPuppeter
         ["F9"] = "F9",
         ["F10"] = "F10",
         ["F11"] = "F11",
-        ["F12"] = "F12"
+        ["F12"] = "F12",
+        ["OemQuestion"] = "slash",
+        ["OemPeriod"] = "period",
+        ["OemComma"] = "comma",
+        ["OemMinus"] = "minus",
+        ["OemPlus"] = "equal",
+        ["OemTilde"] = "grave",
+        ["OemSemicolon"] = "semicolon",
+        ["OemQuotes"] = "apostrophe",
+        ["OemBackslash"] = "backslash",
+        ["OemOpenBrackets"] = "bracketleft",
+        ["OemCloseBrackets"] = "bracketright",
+        ["D0"] = "0", ["D1"] = "1", ["D2"] = "2", ["D3"] = "3", ["D4"] = "4",
+        ["D5"] = "5", ["D6"] = "6", ["D7"] = "7", ["D8"] = "8", ["D9"] = "9",
+        ["NumPad0"] = "KP_0", ["NumPad1"] = "KP_1", ["NumPad2"] = "KP_2",
+        ["NumPad3"] = "KP_3", ["NumPad4"] = "KP_4", ["NumPad5"] = "KP_5",
+        ["NumPad6"] = "KP_6", ["NumPad7"] = "KP_7", ["NumPad8"] = "KP_8",
+        ["NumPad9"] = "KP_9",
+        ["Multiply"] = "KP_Multiply", ["Add"] = "KP_Add",
+        ["Subtract"] = "KP_Subtract", ["Divide"] = "KP_Divide",
+        ["Decimal"] = "KP_Decimal",
     };
 
     public string Name => "X11";
@@ -90,6 +110,12 @@ internal sealed partial class X11Puppeter : IPuppeter
     public void HandleKeyDown(string key, KeyModifier modifier)
     {
         var keysym = XStringToKeysym(ToX11KeysymName(key));
+        if (keysym == 0)
+        {
+            NeyrdLogger.Log($"No X11 keysym for key: {key}");
+            return;
+        }
+
         var keycode = XKeysymToKeycode(_display, keysym);
 
         var activeModifiers = Enum.GetValues<KeyModifier>()
