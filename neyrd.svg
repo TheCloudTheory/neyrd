@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260">
+  <!-- Background -->
+  <rect width="400" height="260" fill="#f5f4f0" rx="12"/>
+
+  <!--
+    Glasses: left lens = emitter (source screen), right lens = receiver (mirror of source).
+    The reflection in the right lens is horizontally flipped — same content, mirrored.
+  -->
+
+  <!-- Left arm -->
+  <line x1="30" y1="118" x2="68" y2="118" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <line x1="332" y1="118" x2="370" y2="118" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Bridge -->
+  <line x1="182" y1="118" x2="218" y2="118" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Left lens frame (emitter) -->
+  <rect x="68" y="78" width="114" height="80" rx="14" fill="#1a1a2a" stroke="#222" stroke-width="3.5"/>
+  <!-- Right lens frame (receiver) -->
+  <rect x="218" y="78" width="114" height="80" rx="14" fill="#1a1a2a" stroke="#222" stroke-width="3.5"/>
+
+  <!-- Left lens content — a small desktop scene (emitter) -->
+  <g clip-path="url(#leftLens)">
+    <!-- screen bg already dark -->
+    <!-- titlebar -->
+    <rect x="76" y="86" width="98" height="12" rx="3" fill="#2a2a3a"/>
+    <circle cx="84" cy="92" r="3" fill="#ff5f57"/>
+    <circle cx="93" cy="92" r="3" fill="#febc2e"/>
+    <circle cx="102" cy="92" r="3" fill="#28c840"/>
+    <!-- window content lines -->
+    <rect x="76" y="102" width="60" height="4" rx="2" fill="#444466"/>
+    <rect x="76" y="110" width="42" height="4" rx="2" fill="#444466"/>
+    <rect x="76" y="118" width="54" height="4" rx="2" fill="#444466"/>
+    <rect x="76" y="126" width="36" height="4" rx="2" fill="#444466"/>
+    <rect x="76" y="134" width="48" height="4" rx="2" fill="#444466"/>
+    <!-- cursor -->
+    <polygon points="138,108 138,120 141,117 143,122 145,121 143,116 147,116" fill="#aaaacc"/>
+  </g>
+  <clipPath id="leftLens">
+    <rect x="68" y="78" width="114" height="80" rx="14"/>
+  </clipPath>
+
+  <!-- Right lens content — mirror of left lens (receiver) -->
+  <!-- Mirrored by reflecting horizontally around center x=275 -->
+  <g clip-path="url(#rightLens)">
+    <!-- screen bg already dark -->
+    <!-- titlebar (mirrored) -->
+    <rect x="226" y="86" width="98" height="12" rx="3" fill="#2a2a3a"/>
+    <circle cx="316" cy="92" r="3" fill="#ff5f57"/>
+    <circle cx="307" cy="92" r="3" fill="#febc2e"/>
+    <circle cx="298" cy="92" r="3" fill="#28c840"/>
+    <!-- window content lines (mirrored) -->
+    <rect x="264" y="102" width="60" height="4" rx="2" fill="#444466"/>
+    <rect x="282" y="110" width="42" height="4" rx="2" fill="#444466"/>
+    <rect x="270" y="118" width="54" height="4" rx="2" fill="#444466"/>
+    <rect x="288" y="126" width="36" height="4" rx="2" fill="#444466"/>
+    <rect x="276" y="134" width="48" height="4" rx="2" fill="#444466"/>
+    <!-- cursor (mirrored) -->
+    <polygon points="262,108 262,120 259,117 257,122 255,121 257,116 253,116" fill="#aaaacc"/>
+  </g>
+  <clipPath id="rightLens">
+    <rect x="218" y="78" width="114" height="80" rx="14"/>
+  </clipPath>
+
+  <!-- Subtle reflection sheen on right lens — indicates it's the mirror/receiver -->
+  <rect x="218" y="78" width="114" height="80" rx="14"
+        fill="none" stroke="white" stroke-width="1" opacity="0.15"/>
+  <line x1="232" y1="84" x2="248" y2="84" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.25"/>
+
+  <!-- "neyrd" wordmark -->
+  <text x="200" y="210" font-family="'Courier New', monospace" font-size="38" font-weight="bold"
+        fill="#1a1a2a" text-anchor="middle" letter-spacing="5">neyrd</text>
+
+  <!-- Tagline -->
+  <text x="200" y="232" font-family="'Courier New', monospace" font-size="9"
+        fill="#888" text-anchor="middle" letter-spacing="2">NOT YET ANOTHER REMOTE DESKTOP</text>
+</svg>

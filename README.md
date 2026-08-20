@@ -1,5 +1,7 @@
 # neyrd
 
+![neyrd](neyrd.svg)
+
 Low-latency screen streaming over raw TCP — built out of frustration with sluggish macOS → Linux RDP performance.
 
 *neyrd* loosely translates to "Not Yet Another Remote Desktop". You can call it _nerd_ though.
