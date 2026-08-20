@@ -7,6 +7,7 @@ internal sealed partial class X11Puppeter : IPuppeter
 {
     private IntPtr _display;
     private ulong _root;
+    private bool _altGrActive;
 
     private static readonly Dictionary<string, string> KeyToX11 = new()
     {
@@ -116,7 +117,15 @@ internal sealed partial class X11Puppeter : IPuppeter
 
     public void HandleKeyDown(string key, KeyModifier modifier)
     {
-        var keysym = XStringToKeysym(ToX11KeysymName(key));
+        _altGrActive = key switch
+        {
+            "RightAlt" => true,
+            "LeftAlt" => false,
+            _ => _altGrActive
+        };
+
+        var keysymName = ToX11KeysymName(key);
+        var keysym = XStringToKeysym(keysymName);
         if (keysym == 0)
         {
             NeyrdLogger.Log($"No X11 keysym for key: {key}");
@@ -152,11 +161,16 @@ internal sealed partial class X11Puppeter : IPuppeter
         }
 
         _ = XFlush(_display);
+        
+        if (modifier.HasFlag(KeyModifier.Alt))
+        {
+            _altGrActive = false;
+        }
     }
 
-    private static string ModifierToX11String(KeyModifier modifier) => modifier switch
+    private string ModifierToX11String(KeyModifier modifier) => modifier switch
     {
-        KeyModifier.Alt => "Alt_L",
+        KeyModifier.Alt => _altGrActive ? "ISO_Level3_Shift" : "Alt_L",
         KeyModifier.Control => "Control_L",
         KeyModifier.Shift => "Shift_L",
         KeyModifier.Meta => "Super_L",
