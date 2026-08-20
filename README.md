@@ -4,7 +4,7 @@
   <img src="neyrd.svg" alt="neyrd"/>
 </p>
 
-Low-latency screen streaming over raw TCP — built out of frustration with sluggish macOS → Linux RDP performance.
+Low-latency screen streaming over raw TCP. No GPU required. No account. No relay. Just a socket.
 
 *neyrd* loosely translates to "Not Yet Another Remote Desktop". You can call it _nerd_ though.
 
@@ -62,9 +62,11 @@ Not an RDP client. No RDP protocol involved — neyrd uses its own framing over 
 | Parsec | Proprietary | ~15–30ms | No | No |
 | Sunshine/Moonlight | RTSP/custom | ~15–40ms | Yes | Yes |
 
+*Latency figures are approximate end-to-end estimates on LAN and vary by hardware and network conditions.*
+
 **Key differences:**
 
-- **RDP / VNC** — general-purpose remote desktop protocols with broad feature sets (clipboard, audio, file transfer). neyrd is video-only with minimal overhead.
-- **TeamViewer** — traffic is routed through TeamViewer relay servers. neyrd is direct TCP with no third-party involvement.
-- **Parsec** — closest in goals (low-latency streaming), but closed-source and requires account registration.
-- **Sunshine/Moonlight** — game-streaming focused, uses GPU encoding. neyrd targets CPU-only environments and simpler deployments.
+- **RDP / VNC** — general-purpose protocols with broad feature sets (clipboard, audio, file transfer). neyrd is video-only with minimal overhead and no protocol negotiation complexity.
+- **TeamViewer** — traffic is routed through relay servers. neyrd is direct TCP with no third-party involvement and no account required.
+- **Parsec** — closest in goals (low-latency streaming), but closed-source, requires an account, and relies on GPU encoding. neyrd works on any CPU-equipped machine.
+- **Sunshine/Moonlight** — the strongest open-source alternative, but requires a GPU-capable host (NVIDIA, AMD, or Intel). neyrd is the open-source, self-hosted option that works without one.
