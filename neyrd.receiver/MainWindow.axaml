@@ -7,6 +7,7 @@
         Title="neyrd.receiver"
         PointerMoved="OnPointerMoved"
         PointerPressed="OnPointerPressed"
+        PointerReleased="OnPointerReleased"
         PointerWheelChanged="OnPointerWheelChanged"
         KeyDown="OnKeyDown"
         KeyUp="OnKeyUp">

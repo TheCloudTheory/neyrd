@@ -87,21 +87,15 @@ internal sealed partial class X11Puppeter : IPuppeter
     public void HandleClick(double x, double y, MouseButton button)
     {
         MovePointer(x, y);
+        
+        _ = XTestFakeButtonEvent(_display, (uint)button, true, 0);
+        _ = XFlush(_display);
+    }
 
-        try
-        {
-            NeyrdLogger.Log($"Display: {_display != IntPtr.Zero}");
-
-            _ = XTestFakeButtonEvent(_display, (uint)button, true, 0);
-            _ = XFlush(_display);
-            Thread.Sleep(50);
-            _ = XTestFakeButtonEvent(_display, (uint)button, false, 0);
-            _ = XFlush(_display);
-        }
-        catch (DllNotFoundException ex)
-        {
-            NeyrdLogger.Log($"Error when handling pointer click: {ex.Message}");
-        }
+    public void HandleClickReleased(MouseButton button)
+    {
+        _ = XTestFakeButtonEvent(_display, (uint)button, false, 0);
+        _ = XFlush(_display);
     }
 
     public void HandleWheel(double deltaLength, double deltaX, double deltaY)

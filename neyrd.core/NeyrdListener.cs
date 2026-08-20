@@ -146,6 +146,13 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                     PointerPressedEvent.From(MessageEnvelope.From(message)));
             }
             
+            if (MessageTypeComparer.IsEqual(type, MessageType.PointerReleased))
+            {
+                NeyrdLogger.Log($"Pointer released: {message}");
+                EventPipeline.Publish<PointerReleasedEvent, MouseButton>(
+                    PointerReleasedEvent.From(MessageEnvelope.From(message)));
+            }
+            
             if (MessageTypeComparer.IsEqual(type, MessageType.PointerWheel))
             {
                 NeyrdLogger.Log($"Pointer wheel: {message}");

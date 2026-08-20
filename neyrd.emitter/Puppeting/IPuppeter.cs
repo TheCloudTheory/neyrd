@@ -14,6 +14,7 @@ internal interface IPuppeter : IDisposable
     
     void MovePointer(double x, double y);
     void HandleClick(double x, double y, MouseButton button);
+    void HandleClickReleased(MouseButton button);
     void HandleWheel(double deltaLength, double deltaX, double deltaY);
     
     void HandleKeyDown(string key, KeyModifier modifier);

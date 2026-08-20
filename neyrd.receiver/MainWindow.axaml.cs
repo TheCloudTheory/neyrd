@@ -19,7 +19,7 @@ public partial class MainWindow : Window
 {
     private readonly NeyrdSender _sender;
 
-    private long _pointerMovedControlTimestamp = 0;
+    private long _pointerMovedControlTimestamp;
     private WriteableBitmap? FrameBitmap { get; set; }
     
     public MainWindow(NeyrdSender sender)
@@ -35,6 +35,7 @@ public partial class MainWindow : Window
 
         PointerMoved += OnPointerMoved;
         PointerPressed += OnPointerPressed;
+        PointerReleased += OnPointerReleased;
         PointerWheelChanged += OnPointerWheelChanged;
         KeyDown += OnKeyDown;
         KeyUp += OnKeyUp;
@@ -63,13 +64,24 @@ public partial class MainWindow : Window
     {
         if (e.Handled) return;
         e.Handled = true;
-
+        
         var position = e.GetPosition(ScreenImage);
         var mousePosition = GetMousePosition(position);
         var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
             e.Properties.IsMiddleButtonPressed, e.Properties.IsRightButtonPressed);
         
         _ = _sender.Send(PointerPressedMessage.ToMessage(mousePosition.x, mousePosition.y, button));
+    }
+    
+    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.Handled) return;
+        e.Handled = true;
+        
+        var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
+            e.Properties.IsMiddleButtonPressed, e.Properties.IsRightButtonPressed);
+        
+        _ = _sender.Send(PointerReleasedMessage.ToMessage(button));
     }
 
     private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)

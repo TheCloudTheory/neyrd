@@ -57,7 +57,8 @@ public enum MessageType
     PointerPressed,
     PointerWheel,
     KeyDown,
-    KeyUp
+    KeyUp,
+    PointerReleased
 }
 
 public static class MessageTypeComparer
