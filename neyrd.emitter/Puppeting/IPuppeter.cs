@@ -17,6 +17,7 @@ internal interface IPuppeter : IDisposable
     void HandleWheel(double deltaLength, double deltaX, double deltaY);
     
     void HandleKeyDown(string key, KeyModifier modifier);
+    void HandleKeyUp(string key, KeyModifier modifier);
     
     (int width, int height) GetScreenSize();
 }

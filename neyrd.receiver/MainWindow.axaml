@@ -8,7 +8,8 @@
         PointerMoved="OnPointerMoved"
         PointerPressed="OnPointerPressed"
         PointerWheelChanged="OnPointerWheelChanged"
-        KeyDown="OnKeyDown">
+        KeyDown="OnKeyDown"
+        KeyUp="OnKeyUp">
 
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Background="#1e1e1e" Padding="8,4">

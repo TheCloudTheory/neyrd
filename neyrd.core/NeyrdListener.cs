@@ -159,6 +159,13 @@ public sealed class NeyrdListener(IPAddress ipAddress)
                 EventPipeline.Publish<KeyPressedDownEvent, (string, KeyModifier)>(
                     KeyPressedDownEvent.From(MessageEnvelope.From(message)));
             }
+            
+            if (MessageTypeComparer.IsEqual(type, MessageType.KeyUp))
+            {
+                NeyrdLogger.Log($"Key up: {message}");
+                EventPipeline.Publish<KeyPressedUpEvent, (string, KeyModifier)>(
+                    KeyPressedUpEvent.From(MessageEnvelope.From(message)));
+            }
         }
         catch (Exception ex)
         {

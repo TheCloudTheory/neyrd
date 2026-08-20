@@ -135,6 +135,7 @@ try
     EventPipeline.Subscribe(new PointerPressedEventHandler(puppeter));
     EventPipeline.Subscribe(new PointerWheelChangedEventHandler(puppeter));
     EventPipeline.Subscribe(new KeyPressedDownEventHandler(puppeter));
+    EventPipeline.Subscribe(new KeyPressedUpEventHandler(puppeter));
 
     AnsiConsole.WriteLine("Initializing listener...");
 
