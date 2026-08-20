@@ -33,12 +33,13 @@ jobs:
           --self-contained
           -o publish/linux-x64
 
-      - name: Publish receiver (Linux x64, self-contained)
+      - name: Publish receiver (Linux x64, single-file)
         run: >
           dotnet publish neyrd.receiver/neyrd.receiver.csproj
           -c Release
           -r linux-x64
           --self-contained
+          -p:PublishSingleFile=true
           -o publish/receiver-linux-x64
 
       - name: Create release
