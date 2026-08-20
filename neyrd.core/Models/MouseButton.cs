@@ -2,6 +2,7 @@ namespace neyrd.core.Models;
 
 public enum MouseButton
 {
+    None = 0,
     Left = 1,
     Middle = 2,
     Right = 3
@@ -14,5 +15,11 @@ public static class MouseButtonExtensions
         if (isLeftButtonClick) return MouseButton.Left;
         if (isMiddleButtonClicked) return MouseButton.Middle;
         return isRightButtonClicked ? MouseButton.Right : throw new InvalidOperationException();
+    }
+
+    public static MouseButton ToButton(int avaloniaMouseButton)
+    {
+        var button = (MouseButton)avaloniaMouseButton;
+        return button;
     }
 }

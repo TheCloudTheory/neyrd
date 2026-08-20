@@ -78,8 +78,7 @@ public partial class MainWindow : Window
         if (e.Handled) return;
         e.Handled = true;
         
-        var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
-            e.Properties.IsMiddleButtonPressed, e.Properties.IsRightButtonPressed);
+        var button = MouseButtonExtensions.ToButton((int)e.InitialPressMouseButton);
         
         _ = _sender.Send(PointerReleasedMessage.ToMessage(button));
     }
