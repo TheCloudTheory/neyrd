@@ -139,6 +139,15 @@ internal sealed partial class X11Puppeter : IPuppeter
             .Select(m => XKeysymToKeycode(_display, XStringToKeysym(ModifierToX11String(m))))
             .Where(kc => kc != 0)
             .ToList();
+        
+        NeyrdLogger.Log($"HandleKeyDown: key={key} modifier={modifier} altGrActive={_altGrActive}");
+        NeyrdLogger.Log($"  keycode={keycode}");
+        foreach (var (m, kc) in Enum.GetValues<KeyModifier>()
+                     .Where(m => m != KeyModifier.None && modifier.HasFlag(m))
+                     .Select(m => (m, XKeysymToKeycode(_display, XStringToKeysym(ModifierToX11String(m))))))
+        {
+            NeyrdLogger.Log($"  modifier {m} -> keycode={kc}");
+        }
 
         foreach (var modKeycode in activeModifiers)
         {
