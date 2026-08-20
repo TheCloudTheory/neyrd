@@ -50,6 +50,11 @@ jobs:
           --self-contained
           -o publish/receiver-osx-arm64
 
+      - name: Rename receiver artifacts
+        run: |
+          mv publish/receiver-linux-x64/neyrd.receiver publish/receiver-linux-x64/neyrd.receiver-linux-x64
+          mv publish/receiver-osx-arm64/neyrd.receiver publish/receiver-osx-arm64/neyrd.receiver-osx-arm64
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -58,5 +63,5 @@ jobs:
           generate_release_notes: true
           files: |
             publish/linux-x64/neyrd.emitter
-            publish/receiver-linux-x64/neyrd.receiver
-            publish/receiver-osx-arm64/neyrd.receiver
+            publish/receiver-linux-x64/neyrd.receiver-linux-x64
+            publish/receiver-osx-arm64/neyrd.receiver-osx-arm64
