@@ -10,9 +10,39 @@ Low-latency screen streaming over raw TCP. No GPU required. No account. No relay
 
 ## Usage
 
+### 1. Download
+
+Grab the latest binaries from the [Releases](../../releases/latest) page:
+
+- `neyrd.emitter` — run on the **host** (the machine you want to stream from)
+- `neyrd.receiver` — run on the **client** (the machine you watch on)
+
+Make them executable on Linux:
+
+```sh
+chmod +x neyrd.emitter neyrd.receiver
 ```
-neyrd --receiver-ip <receiver-ip-address> --adapter <X11|ScreenCaptureKit>
+
+### 2. Start the receiver
+
+Run `neyrd.receiver` on the client machine. It will listen on TCP port 22222 and display the stream once the emitter connects.
+
+### 3. Start the emitter
+
+Run `neyrd.emitter` on the host machine, pointing it at the receiver's IP address:
+
+```sh
+# Linux (X11)
+./neyrd.emitter --receiver-ip <receiver-ip> --adapter X11
+
+# macOS (ScreenCaptureKit)
+./neyrd.emitter --receiver-ip <receiver-ip> --adapter ScreenCaptureKit
 ```
+
+| Flag | Description |
+|---|---|
+| `--receiver-ip` | IP address of the machine running `neyrd.receiver` |
+| `--adapter` | Capture backend: `X11` (Linux) or `ScreenCaptureKit` (macOS) |
 
 ## How it works
 
