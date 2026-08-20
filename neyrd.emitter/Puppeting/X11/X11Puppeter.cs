@@ -61,7 +61,7 @@ internal sealed partial class X11Puppeter : IPuppeter
         ["Decimal"] = "KP_Decimal",
         ["Oem3"]       = "grave",
         ["LeftAlt"]    = "Alt_L",
-        ["RightAlt"]   = "Alt_R",
+        ["RightAlt"]   = "ISO_Level3_Shift",
         ["LeftCtrl"]   = "Control_L",
         ["RightCtrl"]  = "Control_R",
         ["LWin"]       = "Super_L",
