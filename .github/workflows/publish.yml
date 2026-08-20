@@ -42,6 +42,14 @@ jobs:
           -p:PublishSingleFile=true
           -o publish/receiver-linux-x64
 
+      - name: Publish receiver (macOS ARM64, self-contained)
+        run: >
+          dotnet publish neyrd.receiver/neyrd.receiver.csproj
+          -c Release
+          -r osx-arm64
+          --self-contained
+          -o publish/receiver-osx-arm64
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -51,3 +59,4 @@ jobs:
           files: |
             publish/linux-x64/neyrd.emitter
             publish/receiver-linux-x64/neyrd.receiver
+            publish/receiver-osx-arm64/neyrd.receiver
