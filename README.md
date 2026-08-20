@@ -1,6 +1,8 @@
 # neyrd
 
-![neyrd](neyrd.svg)
+<p align="center">
+  <img src="neyrd.svg" alt="neyrd"/>
+</p>
 
 Low-latency screen streaming over raw TCP — built out of frustration with sluggish macOS → Linux RDP performance.
 
