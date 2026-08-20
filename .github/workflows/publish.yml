@@ -48,6 +48,7 @@ jobs:
           -c Release
           -r osx-arm64
           --self-contained
+          -p:PublishSingleFile=true
           -o publish/receiver-osx-arm64
 
       - name: Rename receiver artifacts
