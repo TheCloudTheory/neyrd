@@ -50,6 +50,8 @@ internal sealed partial class X11Puppeter : IPuppeter
         ["OemBackslash"] = "backslash",
         ["OemOpenBrackets"] = "bracketleft",
         ["OemCloseBrackets"] = "bracketright",
+        ["Oem4"] = "bracketleft",
+        ["Oem6"] = "bracketright",
         ["D0"] = "0", ["D1"] = "1", ["D2"] = "2", ["D3"] = "3", ["D4"] = "4",
         ["D5"] = "5", ["D6"] = "6", ["D7"] = "7", ["D8"] = "8", ["D9"] = "9",
         ["NumPad0"] = "KP_0", ["NumPad1"] = "KP_1", ["NumPad2"] = "KP_2",
