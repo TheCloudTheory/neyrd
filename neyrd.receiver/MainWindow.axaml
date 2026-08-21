@@ -18,6 +18,7 @@
             <StackPanel Orientation="Horizontal" Spacing="16">
                 <TextBlock x:Name="IpLabel" Foreground="#aaaaaa" FontSize="12" />
                 <TextBlock x:Name="LatencyLabel" Foreground="#aaaaaa" FontSize="12" />
+                <TextBlock x:Name="VersionLabel" Foreground="#aaaaaa" FontSize="12" />
             </StackPanel>
         </Border>
         <Grid>

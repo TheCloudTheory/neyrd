@@ -32,6 +32,9 @@ public partial class MainWindow : Window
         IpLabel.Text = ips.Length > 0
             ? $"IP: {string.Join(", ", ips)}"
             : "IP: unavailable";
+        
+        LatencyLabel.Text = $"Latency: N/A";
+        VersionLabel.Text = $"Version: {ThisAssembly.AssemblyInformationalVersion}";
 
         PointerMoved += OnPointerMoved;
         PointerPressed += OnPointerPressed;
