@@ -10,7 +10,8 @@
         PointerReleased="OnPointerReleased"
         PointerWheelChanged="OnPointerWheelChanged"
         KeyDown="OnKeyDown"
-        KeyUp="OnKeyUp">
+        KeyUp="OnKeyUp"
+        Icon="avares://neyrd.receiver/Assets/neyrd.ico">
 
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Background="#1e1e1e" Padding="8,4">
