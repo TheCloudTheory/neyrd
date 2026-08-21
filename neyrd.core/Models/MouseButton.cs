@@ -4,8 +4,8 @@ public enum MouseButton
 {
     None = 0,
     Left = 1,
-    Middle = 2,
-    Right = 3
+    Right = 2,
+    Middle = 3
 }
 
 public static class MouseButtonExtensions
