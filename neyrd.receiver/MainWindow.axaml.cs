@@ -67,8 +67,8 @@ public partial class MainWindow : Window
         
         var position = e.GetPosition(ScreenImage);
         var mousePosition = GetMousePosition(position);
-        var button = MouseButtonExtensions.ToButton(e.Properties.IsLeftButtonPressed,
-            e.Properties.IsMiddleButtonPressed, e.Properties.IsRightButtonPressed);
+        
+        var button = e.Properties.ToMouseButton();
         
         _ = _sender.Send(PointerPressedMessage.ToMessage(mousePosition.x, mousePosition.y, button));
     }

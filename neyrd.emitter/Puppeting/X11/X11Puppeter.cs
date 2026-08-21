@@ -89,9 +89,11 @@ internal sealed partial class X11Puppeter : IPuppeter
     // X11 button IDs: 1=Left, 2=Middle, 3=Right
     private static uint ToX11Button(MouseButton button) => button switch
     {
-        MouseButton.Left   => 1u,
-        MouseButton.Middle => 2u,
-        MouseButton.Right  => 3u,
+        MouseButton.Left     => 1u,
+        MouseButton.Middle   => 2u,
+        MouseButton.Right    => 3u,
+        MouseButton.XButton1 => 8u,
+        MouseButton.XButton2 => 9u,
         _ => (uint)button
     };
 
