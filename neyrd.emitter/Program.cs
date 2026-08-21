@@ -5,6 +5,7 @@ using neyrd.core.Benchmark.Handlers;
 using neyrd.core.Environment;
 using neyrd.core.Events;
 using neyrd.core.Models.Messages;
+using neyrd.emitter;
 using neyrd.emitter.Capturing;
 using neyrd.emitter.Capturing.CoreGraphics;
 using neyrd.emitter.Capturing.ScreenCaptureKit;
@@ -29,11 +30,19 @@ try
         Environment.Exit(1);
     }
 
+    var presetOption = args.SkipWhile(a => a != "--preset").Skip(1).FirstOrDefault();
     var receiverIpAddressOption = args.SkipWhile(a => a != "--receiver-ip").Skip(1).FirstOrDefault();
-    if (string.IsNullOrWhiteSpace(receiverIpAddressOption))
+    if (string.IsNullOrWhiteSpace(receiverIpAddressOption) && string.IsNullOrWhiteSpace(presetOption))
     {
         AnsiConsole.Markup(
-            "[red]No receiver IP address specified. Please provide an IP address using the --receiver-ip option.[/]");
+            "[red]No receiver IP address specified. Please provide an IP address using the --receiver-ip option or use --preset.[/]");
+        Environment.Exit(1);
+    }
+
+    if (!string.IsNullOrWhiteSpace(receiverIpAddressOption) && !string.IsNullOrWhiteSpace(presetOption))
+    {
+        AnsiConsole.Markup(
+            "[red]You can't use both --receiver-ip and --preset option.[/]");
         Environment.Exit(1);
     }
 
@@ -125,8 +134,9 @@ try
 
     AnsiConsole.WriteLine("Registering handlers...");
 
-    sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()),
-        IPAddress.Parse(receiverIpAddressOption));
+    var receiverIp = string.IsNullOrWhiteSpace(receiverIpAddressOption) ? PresetManager.LoadPreset(presetOption!) : IPAddress.Parse(receiverIpAddressOption);
+    sender = new NeyrdSender(IPAddress.Parse(NetworkInfoCollector.NetworkInterfaces.First()), receiverIp);
+    
     EventPipeline.Subscribe(new TestStartedEventHandler());
     EventPipeline.Subscribe(new TestReceivedHandler());
     EventPipeline.Subscribe(new TestCompletedHandler());

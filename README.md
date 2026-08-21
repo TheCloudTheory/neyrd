@@ -43,6 +43,26 @@ Run `neyrd.emitter` on the host machine, pointing it at the receiver's IP addres
 |---|---|
 | `--receiver-ip` | IP address of the machine running `neyrd.receiver` |
 | `--adapter` | Capture backend: `X11` (Linux) or `ScreenCaptureKit` (macOS) |
+| `--preset` | Name of a `.neyrd` preset file (alternative to `--receiver-ip`) |
+
+### Presets
+
+A preset is a `.neyrd` file that stores a named receiver IP so you don't have to type it every time.
+
+**Example — `home.neyrd`:**
+
+```
+name=home
+ip=192.168.1.42
+```
+
+**Use it with:**
+
+```sh
+./neyrd.emitter --preset home --adapter X11
+```
+
+The emitter looks for `<name>.neyrd` in the current working directory. `--preset` and `--receiver-ip` are mutually exclusive.
 
 ## How it works
 
