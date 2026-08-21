@@ -22,9 +22,12 @@
             </StackPanel>
         </Border>
         <Grid>
-            <TextBlock x:Name="Placeholder" Text="Waiting for the emitter..."
-                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                       Foreground="#666666" FontSize="16" />
+            <StackPanel x:Name="Placeholder" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                <Image Source="avares://neyrd.receiver/Assets/neyrd_glasses.png" Width="160" />
+                <TextBlock Text="Waiting for the emitter..."
+                           HorizontalAlignment="Center"
+                           Foreground="#666666" FontSize="16" />
+            </StackPanel>
             <Image x:Name="ScreenImage" Stretch="Uniform" />
         </Grid>
     </DockPanel>
