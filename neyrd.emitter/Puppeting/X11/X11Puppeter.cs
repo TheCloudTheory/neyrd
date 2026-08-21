@@ -86,17 +86,26 @@ internal sealed partial class X11Puppeter : IPuppeter
         _ = XFlush(_display);
     }
 
+    // X11 button IDs: 1=Left, 2=Middle, 3=Right
+    private static uint ToX11Button(MouseButton button) => button switch
+    {
+        MouseButton.Left   => 1u,
+        MouseButton.Middle => 2u,
+        MouseButton.Right  => 3u,
+        _ => (uint)button
+    };
+
     public void HandleClick(double x, double y, MouseButton button)
     {
         MovePointer(x, y);
         
-        _ = XTestFakeButtonEvent(_display, (uint)button, true, 0);
+        _ = XTestFakeButtonEvent(_display, ToX11Button(button), true, 0);
         _ = XFlush(_display);
     }
 
     public void HandleClickReleased(MouseButton button)
     {
-        _ = XTestFakeButtonEvent(_display, (uint)button, false, 0);
+        _ = XTestFakeButtonEvent(_display, ToX11Button(button), false, 0);
         _ = XFlush(_display);
     }
 
